@@ -8,7 +8,7 @@ import {
   HideScroll,
 } from "react-hide-on-scroll";
 
-const AboutMeBox = () => {
+const EducationBox = () => {
   return (
     <React.Fragment>
       <HideOn atHeight height={1000}>
@@ -22,7 +22,7 @@ const AboutMeBox = () => {
           }}
         >
           <Typography variant="h5" sx={{ borderBottom: "1px solid" }}>
-            About me
+            Education
           </Typography>
           <Typography variant="subtitle1">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -38,4 +38,4 @@ const AboutMeBox = () => {
     </React.Fragment>
   );
 };
-export default AboutMeBox;
+export default EducationBox;

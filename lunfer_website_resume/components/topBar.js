@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
+import { useRouter } from "next/router";
 
 function ElevationScroll(props) {
   const { children, window } = props;
@@ -33,6 +34,7 @@ ElevationScroll.propTypes = {
 };
 
 const TopBar = (props) => {
+  const router = useRouter();
   return (
     <React.Fragment>
       <Box
@@ -64,20 +66,33 @@ const TopBar = (props) => {
                   sx={{ flexGrow: 1 }}
                   gutterBottom
                 >
-                  Zoi Kousteni
+                  Zoi{" "}
+                  <Typography
+                    variant="h2"
+                    component="h2"
+                    sx={{
+                      display: "inline-block",
+                      color: "white",
+                      textShadow:
+                        "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+                    }}
+                  >
+                    Kousteni
+                  </Typography>
                 </Typography>
               </Grid>
               <Grid item xs>
                 <Button
                   variant="outlined"
                   size="small"
+                  onClick={() => router.push("/#contactBox")}
                   sx={{
-                    background: "rgba(196, 196, 196, 0.3)",
+                    background: "rgba(255, 255, 255, 0.4)",
                     border: "none",
                     display: { xs: "none", sm: "block" },
                     "&:hover": {
                       border: "1px solid black",
-                      background: "rgba(196, 196, 196, 0.3)",
+                      background: "rgba(255, 255, 255, 0.4)",
                     },
                   }}
                 >
