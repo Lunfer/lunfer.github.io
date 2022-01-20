@@ -5,12 +5,16 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import Link from "@mui/material/Link";
+import "aos/dist/aos.css";
 
 const ContactBox = () => {
   return (
     <React.Fragment>
       <Box
         id="contactBox"
+        data-aos="fade-left"
+        data-aos-anchor="#skillsBox"
+        data-aos-anchor-placement="center-center"
         sx={{
           background: "rgba(255, 255, 255, 0.4)",
           border: "none",

@@ -7,6 +7,8 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import "aos/dist/aos.css";
 
 function ElevationScroll(props) {
   const { children, window } = props;
@@ -44,11 +46,14 @@ const TopBar = (props) => {
       >
         <ElevationScroll {...props}>
           <AppBar
-            position="static"
+            position="relative"
             sx={{
               backgroundColor: "transparent",
               boxShadow: "none",
               backgroundImage: "none",
+              width: "100%",
+              height: "100vh",
+              textAlign: "center",
             }}
           >
             <Grid
@@ -56,25 +61,26 @@ const TopBar = (props) => {
               direction="row"
               justifyContent="center"
               alignItems="center"
+              position="absolute"
+              sx={{ top: "40%" }}
             >
               <Grid item xs></Grid>
               <Grid item xs={6}>
                 <Typography
-                  variant="h2"
-                  component="h2"
+                  id="myName"
+                  variant="h1"
+                  component="h1"
                   align="center"
                   sx={{ flexGrow: 1 }}
                   gutterBottom
                 >
                   Zoi{" "}
                   <Typography
-                    variant="h2"
-                    component="h2"
+                    variant="h1"
+                    component="h1"
                     sx={{
                       display: "inline-block",
                       color: "white",
-                      textShadow:
-                        "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
                     }}
                   >
                     Kousteni
@@ -103,6 +109,26 @@ const TopBar = (props) => {
                     Contact me
                   </Typography>
                 </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h4"
+                  component="h4"
+                  sx={{
+                    display: "inline-block",
+                    color: "white",
+                  }}
+                >
+                  Welcome
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <KeyboardArrowDownOutlinedIcon
+                  id="arrow"
+                  className="arrow bounce"
+                  //fontSize="large"
+                  sx={{ color: "white", fontSize: "80px" }}
+                />
               </Grid>
             </Grid>
           </AppBar>

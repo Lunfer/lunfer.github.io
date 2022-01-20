@@ -1,11 +1,16 @@
 import * as React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import "aos/dist/aos.css";
 
 const SkillsetBox = () => {
   return (
     <React.Fragment>
       <Box
+        id="skillsBox"
+        data-aos="fade-left"
+        data-aos-anchor="#expBox"
+        data-aos-anchor-placement="center-center"
         sx={{
           background: "rgba(255, 255, 255, 0.4)",
           border: "none",

@@ -1,11 +1,15 @@
 import * as React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import "aos/dist/aos.css";
 
 const QuestionsBox = () => {
   return (
     <React.Fragment>
       <Box
+        data-aos="fade-left"
+        data-aos-anchor="#contactBox"
+        data-aos-anchor-placement="center-center"
         sx={{
           background: "rgba(255, 255, 255, 0.4)",
           border: "none",
@@ -44,16 +48,8 @@ const QuestionsBox = () => {
         <Typography variant="subtitle1">
           For some, it may seem small, but having no educational background
           around front-end "magic" and yet being able to learn a BIG part of
-          HTML/CSS/JS by myself is{" "}
-          <Typography
-            variant="subtitle1"
-            style={{ display: "inline-block", fontWeight: "bold" }}
-          >
-            {" "}
-            always
-          </Typography>{" "}
-          going to be one of my proudest moments. It really proved to me that my
-          passion has no limits.
+          HTML/CSS/JS by myself is always going to be one of my proudest
+          moments. It really proved to me that my passion has no limits.
         </Typography>
         <Typography variant="h6">
           What do you value the most about a team?
