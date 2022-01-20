@@ -3,39 +3,13 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import useScrollTrigger from "@mui/material/useScrollTrigger";
-import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import "aos/dist/aos.css";
+import InspoQuote from "./inspoQuote";
 
-function ElevationScroll(props) {
-  const { children, window } = props;
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 0,
-    target: window ? window() : undefined,
-  });
-
-  return React.cloneElement(children, {
-    elevation: trigger ? 4 : 0,
-  });
-}
-
-ElevationScroll.propTypes = {
-  children: PropTypes.element.isRequired,
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
-};
-
-const TopBar = (props) => {
+const TopBar = () => {
   const router = useRouter();
   return (
     <React.Fragment>
@@ -44,95 +18,92 @@ const TopBar = (props) => {
           flexGrow: 1,
         }}
       >
-        <ElevationScroll {...props}>
-          <AppBar
-            position="relative"
-            sx={{
-              backgroundColor: "transparent",
-              boxShadow: "none",
-              backgroundImage: "none",
-              width: "100%",
-              height: "100vh",
-              textAlign: "center",
-            }}
+        <AppBar
+          position="relative"
+          sx={{
+            backgroundColor: "transparent",
+            boxShadow: "none",
+            backgroundImage: "none",
+            width: "100%",
+            height: "100vh",
+            textAlign: "center",
+          }}
+        >
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            position="absolute"
+            sx={{ top: "40%" }}
           >
-            <Grid
-              container
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              position="absolute"
-              sx={{ top: "40%" }}
-            >
-              <Grid item xs></Grid>
-              <Grid item xs={6}>
+            <Grid item xs></Grid>
+            <Grid item xs={6}>
+              <Typography
+                id="myName"
+                variant="h1"
+                component="h1"
+                align="center"
+                sx={{ flexGrow: 1 }}
+                gutterBottom
+              >
+                Zoi{" "}
                 <Typography
-                  id="myName"
                   variant="h1"
                   component="h1"
-                  align="center"
-                  sx={{ flexGrow: 1 }}
-                  gutterBottom
-                >
-                  Zoi{" "}
-                  <Typography
-                    variant="h1"
-                    component="h1"
-                    sx={{
-                      display: "inline-block",
-                      color: "white",
-                    }}
-                  >
-                    Kousteni
-                  </Typography>
-                </Typography>
-              </Grid>
-              <Grid item xs>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => router.push("/#contactBox")}
-                  sx={{
-                    background: "rgba(255, 255, 255, 0.4)",
-                    border: "none",
-                    display: { xs: "none", sm: "block" },
-                    "&:hover": {
-                      border: "1px solid black",
-                      background: "rgba(255, 255, 255, 0.4)",
-                    },
-                  }}
-                >
-                  <Typography
-                    variant="subtitle2"
-                    sx={{ color: "black", textTransform: "Capitalize" }}
-                  >
-                    Contact me
-                  </Typography>
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography
-                  variant="h4"
-                  component="h4"
                   sx={{
                     display: "inline-block",
                     color: "white",
                   }}
                 >
-                  Welcome
+                  Kousteni
                 </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <KeyboardArrowDownOutlinedIcon
-                  id="arrow"
-                  className="arrow bounce"
-                  //fontSize="large"
-                  sx={{ color: "white", fontSize: "80px" }}
-                />
-              </Grid>
+              </Typography>
             </Grid>
-          </AppBar>
-        </ElevationScroll>
+            <Grid item xs>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => router.push("/#contactBox")}
+                sx={{
+                  background: "rgba(255, 255, 255, 0.4)",
+                  border: "none",
+                  display: { xs: "none", sm: "block" },
+                  "&:hover": {
+                    border: "1px solid black",
+                    background: "rgba(255, 255, 255, 0.4)",
+                  },
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{ color: "black", textTransform: "Capitalize" }}
+                >
+                  Contact me
+                </Typography>
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography
+                variant="h4"
+                component="h4"
+                sx={{
+                  display: "inline-block",
+                  color: "white",
+                }}
+              >
+                <InspoQuote />
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <KeyboardArrowDownOutlinedIcon
+                id="arrow"
+                className="arrow bounce"
+                sx={{ color: "white", fontSize: "80px" }}
+              />
+            </Grid>
+          </Grid>
+        </AppBar>
       </Box>
     </React.Fragment>
   );

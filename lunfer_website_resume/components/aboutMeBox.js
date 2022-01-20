@@ -9,7 +9,7 @@ const AboutMeBox = () => {
     <React.Fragment>
       <Box
         id="AboutMeBox"
-        data-aos="fade-left"
+        data-aos="fade-right"
         data-aos-anchor="#myName"
         data-aos-anchor-placement="top-top"
         sx={{
@@ -24,13 +24,18 @@ const AboutMeBox = () => {
           About me
         </Typography>
         <Typography variant="subtitle1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          Social butterfly, Outside-of-the-box thinker and Machine Learning
+          lover. Really passionate about data and the way that it can be used to
+          create solutions and insights to everyday problems as well as "larger"
+          problems. Love to learn no matter the background as I truly believe
+          that every aspect of life is equally as interesting as any other and
+          that is why you may find on my profile more than one topic that is
+          completely different from each other like Languages, HR stuff and also
+          Tech stuff. Furthermore, I was lucky enough to be able to spend a
+          semester abroad while studying at the University of Osijek in Croatia,
+          during the Erasmus+ program, in the Department of Computer Science and
+          Electrical Engineering. Finally, as I am in my senior year, I'm
+          working on my AI-based Thesis.
         </Typography>
       </Box>
     </React.Fragment>

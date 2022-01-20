@@ -8,7 +8,7 @@ const ExpBox = () => {
     <React.Fragment>
       <Box
         id="expBox"
-        data-aos="fade-left"
+        data-aos="fade-right"
         data-aos-anchor="#educationBox"
         data-aos-anchor-placement="center-center"
         sx={{
@@ -23,13 +23,18 @@ const ExpBox = () => {
           Experience
         </Typography>
         <Typography variant="subtitle1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          As a student, I have worked in several customer assistance - centered
+          jobs but my technology-centered jobs started with an internship in
+          EWORX S.A. as a Data Science Intern, in which I learned R and how to
+          use it to effectively manipulate data and visualise them.{<br />}{" "}
+          Followed by, a 6 month period, working as a Junior Data Scientist in
+          Zero To MVP Inc, and with a focus on learning JavaScript and C# /
+          .NET, and used each of these tools to automate processes, as well as
+          deliver projects with API implementations.{<br />} And finally, I am
+          working as a full time Software Engineer in Squaredev, sharpening my
+          JavaScript skills with various frameworks and libraries, while making
+          time to also learn some back-end functionality with NodeJS and API
+          creation with FastAPI.
         </Typography>
       </Box>
     </React.Fragment>

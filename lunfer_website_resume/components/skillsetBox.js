@@ -23,13 +23,21 @@ const SkillsetBox = () => {
           Skillset
         </Typography>
         <Typography variant="subtitle1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          So far I have successfully completed more than 30 different online
+          courses in different learning platforms, with topics varying from Data
+          Science, and Machine Learning to Management and Front-end web
+          developing. {<br />} On the "Top Skills" list, Machine Learning takes
+          up the first place and Front-end developing takes second. Up until
+          this point, I have enough experience to deliver data visualization
+          reports on top of projects that use machine learning algorithms to
+          come up with certain conclusions and at the same time, I am capable of
+          producing responsive websites like this one. {<br />}I am, also,
+          characterized by my strong sense of ownership and accountability,
+          while also aspiring to further hone my management and leadership
+          skills. {<br />} Having a passion for art means that I am a good
+          painter while, always, keeping an eye on details. And finally, I'm on
+          an A1 level (at least) on multiple foreign languages, including
+          Spanish, Croatian, Italian and French.
         </Typography>
       </Box>
     </React.Fragment>

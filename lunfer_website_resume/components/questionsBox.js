@@ -7,7 +7,8 @@ const QuestionsBox = () => {
   return (
     <React.Fragment>
       <Box
-        data-aos="fade-left"
+        data-aos="fade-down"
+        data-aos-easing="linear"
         data-aos-anchor="#contactBox"
         data-aos-anchor-placement="center-center"
         sx={{

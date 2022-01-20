@@ -12,7 +12,7 @@ const ContactBox = () => {
     <React.Fragment>
       <Box
         id="contactBox"
-        data-aos="fade-left"
+        data-aos="fade-right"
         data-aos-anchor="#skillsBox"
         data-aos-anchor-placement="center-center"
         sx={{
@@ -51,6 +51,29 @@ const ContactBox = () => {
             </Link>
           </Grid>
           <Grid item xs={1}>
+            <Link
+              href="https://www.datacamp.com/profile/zoikousteni"
+              sx={{ paddingTop: "2px" }}
+            >
+              <Image
+                src="/datacamp.svg"
+                alt="DataCamp Logo"
+                width={35}
+                height={25}
+              />
+            </Link>
+          </Grid>
+          <Grid item xs={1}>
+            <Link href="https://github.com/Lunfer" sx={{ paddingTop: "2px" }}>
+              <Image
+                src="/github.svg"
+                alt="Github Logo"
+                width={35}
+                height={25}
+              />
+            </Link>
+          </Grid>
+          <Grid item xs={1}>
             <Button
               variant="text"
               onClick={() =>
@@ -60,7 +83,7 @@ const ContactBox = () => {
               <Image src="/email.svg" alt="Email icon" width={35} height={25} />
             </Button>
           </Grid>
-          <Grid item xs={10}></Grid>
+          <Grid item xs={8}></Grid>
         </Grid>
       </Box>
     </React.Fragment>
