@@ -26,12 +26,12 @@ const EducationBox = () => {
           Currently a senior student at the University of West Attica in the
           department of Industrial Design and Production Engineering, formerly
           known as the department of Automation Engineering, pursuing my
-          Bachelor's degree. {<br />} I have also successfully attended a
+          Bachelor&apos;s degree. {<br />} I have also successfully attended a
           semester at the University of Osijek in Croatia, in the department of
           Electrical Engineering and Computer Science, as an Erasmus+ student.
           During this period I took up Croatian language courses that helped me
           into getting my A1 degree, as well as some other courses like
-          "Cryptography and System security".
+          &quot;Cryptography and System security&quot;.
         </Typography>
       </Box>
     </React.Fragment>

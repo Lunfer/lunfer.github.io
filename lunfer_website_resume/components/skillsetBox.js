@@ -26,18 +26,18 @@ const SkillsetBox = () => {
           So far I have successfully completed more than 30 different online
           courses in different learning platforms, with topics varying from Data
           Science, and Machine Learning to Management and Front-end web
-          developing. {<br />} On the "Top Skills" list, Machine Learning takes
-          up the first place and Front-end developing takes second. Up until
-          this point, I have enough experience to deliver data visualization
-          reports on top of projects that use machine learning algorithms to
-          come up with certain conclusions and at the same time, I am capable of
-          producing responsive websites like this one. {<br />}I am
-          characterized by my strong sense of ownership and accountability,
+          developing. {<br />} On the &quot;Top Skills&quot; list, Machine
+          Learning takes up the first place and Front-end developing takes
+          second. Up until this point, I have enough experience to deliver data
+          visualization reports on top of projects that use machine learning
+          algorithms to come up with certain conclusions and at the same time, I
+          am capable of producing responsive websites like this one. {<br />}I
+          am characterized by my strong sense of ownership and accountability,
           while also aspiring to further hone my management and leadership
           skills. {<br />} Having a passion for art means that I am a good
-          painter, while always keeping an eye on details.{<br />} Finally, I'm
-          on an A1 level (at least) on multiple foreign languages, including
-          Spanish, Croatian, Italian and French.
+          painter, while always keeping an eye on details.{<br />} Finally,
+          I&apos;m on an A1 level (at least) on multiple foreign languages,
+          including Spanish, Croatian, Italian and French.
         </Typography>
       </Box>
     </React.Fragment>

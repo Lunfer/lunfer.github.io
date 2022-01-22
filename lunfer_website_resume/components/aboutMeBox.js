@@ -1,7 +1,6 @@
 import * as React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import AOS from "aos";
 import "aos/dist/aos.css";
 
 const AboutMeBox = () => {
@@ -26,16 +25,16 @@ const AboutMeBox = () => {
         <Typography variant="subtitle1">
           Social butterfly, Outside-of-the-box thinker and Machine Learning
           lover. Really passionate about data and the way that it can be used to
-          create solutions and insights to everyday problems as well as "larger"
-          problems. Love to learn no matter the background as I truly believe
-          that every aspect of life is equally as interesting as any other and
-          that is why you may find on my profile more than one topic that is
-          completely different from each other like Languages, HR stuff and also
-          Tech stuff. Furthermore, I was lucky enough to be able to spend a
-          semester abroad while studying at the University of Osijek in Croatia,
-          during the Erasmus+ program, in the Department of Computer Science and
-          Electrical Engineering. Finally, as I am in my senior year, I'm
-          working on my AI-based Thesis.
+          create solutions and insights to everyday problems as well as
+          &quot;larger&quot; problems. Love to learn no matter the background as
+          I truly believe that every aspect of life is equally as interesting as
+          any other and that is why you may find on my profile more than one
+          topic that is completely different from each other like Languages, HR
+          stuff and also Tech stuff. Furthermore, I was lucky enough to be able
+          to spend a semester abroad while studying at the University of Osijek
+          in Croatia, during the Erasmus+ program, in the Department of Computer
+          Science and Electrical Engineering. Finally, as I am in my senior
+          year, I am working on my AI-based Thesis.
         </Typography>
       </Box>
     </React.Fragment>
