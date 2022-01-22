@@ -31,12 +31,12 @@ const SkillsetBox = () => {
           this point, I have enough experience to deliver data visualization
           reports on top of projects that use machine learning algorithms to
           come up with certain conclusions and at the same time, I am capable of
-          producing responsive websites like this one. {<br />}I am, also,
+          producing responsive websites like this one. {<br />}I am
           characterized by my strong sense of ownership and accountability,
           while also aspiring to further hone my management and leadership
           skills. {<br />} Having a passion for art means that I am a good
-          painter while, always, keeping an eye on details. And finally, I'm on
-          an A1 level (at least) on multiple foreign languages, including
+          painter, while always keeping an eye on details.{<br />} Finally, I'm
+          on an A1 level (at least) on multiple foreign languages, including
           Spanish, Croatian, Italian and French.
         </Typography>
       </Box>
