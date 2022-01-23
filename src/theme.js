@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme, responsiveFontSizes } from "@mui/material";
 
 export const Theme = createTheme({
   palette: {
@@ -21,3 +21,5 @@ export const Theme = createTheme({
   },
   typography: { fontFamily: ["Dosis"] },
 });
+
+export const theme = responsiveFontSizes(Theme);

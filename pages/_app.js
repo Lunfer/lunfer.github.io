@@ -1,7 +1,7 @@
 import Head from "next/head";
 import "../styles/globals.css";
 import { ThemeProvider } from "@mui/material";
-import { Theme } from "../src/theme";
+import { Theme, theme } from "../src/theme";
 import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -27,7 +27,7 @@ const MyApp = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider theme={(Theme, theme)}>
         {getLayout(<Component {...pageProps} />)}
       </ThemeProvider>
     </div>
