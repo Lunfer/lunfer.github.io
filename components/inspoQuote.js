@@ -16,4 +16,4 @@ const InspoQuote = () => {
   return <span style={{ fontFamily: "Dosis, sans-serif", fontSize: "0.92rem" }}>{quote}</span>;
 };
 
-export de
+export default InspoQuote;

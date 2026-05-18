@@ -22,4 +22,14 @@ const BoxGridder = () => {
     >
       <AboutMeBox />
       <EducationBox />
-    
+      <ExpBox />
+      <ProjectsBox />
+      <SkillsetBox />
+      <CertificationsBox />
+      <ContactBox />
+      <QuestionsBox />
+    </div>
+  );
+};
+
+export default BoxGridder;
