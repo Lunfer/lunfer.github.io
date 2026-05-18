@@ -1,43 +1,30 @@
 import * as React from "react";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import "aos/dist/aos.css";
 
 const AboutMeBox = () => {
   return (
-    <React.Fragment>
-      <Box
-        id="AboutMeBox"
-        data-aos="fade-right"
-        data-aos-anchor="#myName"
-        data-aos-anchor-placement="top-top"
-        sx={{
-          background: "rgba(255, 255, 255, 0.4)",
-          border: "none",
-          borderRadius: "40px",
-          justifyContent: "center",
-          padding: "20px",
-        }}
-      >
-        <Typography variant="h5" sx={{ borderBottom: "1px solid" }}>
-          About me
-        </Typography>
-        <Typography variant="subtitle1">
-          Social butterfly, Outside-of-the-box thinker and Machine Learning
-          lover. Really passionate about data and the way that it can be used to
-          create solutions and insights to everyday problems as well as
-          &quot;larger&quot; problems. Love to learn no matter the background as
-          I truly believe that every aspect of life is equally as interesting as
-          any other and that is why you may find on my profile more than one
-          topic that is completely different from each other like Languages, HR
-          stuff and also Tech stuff. Furthermore, I was lucky enough to be able
-          to spend a semester abroad while studying at the University of Osijek
-          in Croatia, during the Erasmus+ program, in the Department of Computer
-          Science and Electrical Engineering. Finally, as I am in my senior
-          year, I am working on my AI-based Thesis.
-        </Typography>
-      </Box>
-    </React.Fragment>
+    <section id="about" className="glass-card">
+      <p className="section-label">01 — About</p>
+      <h2 className="section-heading">About Me</h2>
+      <p className="body-text">
+        Being in the job industry since 2017, I have navigated through various professional
+        environments — from sales and customer-facing roles to data engineering and software
+        development. My experience in sales has forged me into a strong communicator with a
+        people-first mindset that I carry into every technical role I take on.
+      </p>
+      <p className="body-text" style={{ marginTop: 12 }}>
+        I&apos;m passionate about data, machine learning, and the way technology can solve
+        real problems. I love to learn across disciplines — languages, design, and engineering
+        all live on my radar. I studied abroad at the University of Osijek in Croatia through
+        the <strong>Erasmus+</strong> programme, completed a Bachelor&apos;s in Industrial
+        Design &amp; Production Engineering at the University of West Attica, and wrote an
+        <strong> AI-based thesis</strong> on Human-Robot Interaction and Trust.
+      </p>
+      <p className="body-text" style={{ marginTop: 12 }}>
+        Currently based in <strong>Rotterdam, NL</strong> and actively learning Dutch. 🇳🇱
+      </p>
+    </section>
   );
 };
+
 export default AboutMeBox;

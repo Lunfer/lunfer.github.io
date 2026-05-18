@@ -1,111 +1,110 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
-import { useRouter } from "next/router";
-import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import "aos/dist/aos.css";
 import InspoQuote from "./inspoQuote";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+
+const NAV_LINKS = [
+  { label: "About", href: "#about" },
+  { label: "Education", href: "#education" },
+  { label: "Experience", href: "#experience" },
+  { label: "Projects", href: "#projects" },
+  { label: "Skills", href: "#skills" },
+  { label: "Certs", href: "#certifications" },
+  { label: "Contact", href: "#contact" },
+];
 
 const TopBar = () => {
-  const router = useRouter();
   return (
-    <React.Fragment>
-      <Box
-        sx={{
-          flexGrow: 1,
+    <>
+      {/* Sticky frosted-glass nav */}
+      <nav className="sticky-nav">
+        <a href="#top" className="nav-name">Zoe Kousteni</a>
+        <ul className="nav-links">
+          {NAV_LINKS.map((l) => (
+            <li key={l.href}>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Hero */}
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          padding: "80px 24px 40px",
         }}
       >
-        <AppBar
-          position="relative"
-          sx={{
-            backgroundColor: "transparent",
-            boxShadow: "none",
-            backgroundImage: "none",
-            width: "100%",
-            height: "100vh",
-            textAlign: "center",
+        <h1
+          style={{
+            margin: "0 0 10px",
+            fontSize: "clamp(3rem, 9vw, 7rem)",
+            fontWeight: 700,
+            fontFamily: "Dosis, sans-serif",
+            color: "#1a1a1a",
+            lineHeight: 1.05,
           }}
         >
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            position="absolute"
-            sx={{ top: "40%" }}
-          >
-            <Grid item xs></Grid>
-            <Grid item xs={6}>
-              <Typography
-                id="myName"
-                variant="h1"
-                component="h1"
-                align="center"
-                sx={{ flexGrow: 1 }}
-                gutterBottom
-              >
-                Zoi{" "}
-                <Typography
-                  variant="h1"
-                  component="h1"
-                  sx={{
-                    display: "inline-block",
-                    color: "white",
-                  }}
-                >
-                  Kousteni
-                </Typography>
-              </Typography>
-            </Grid>
-            <Grid item xs>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => router.push("/#contactBox")}
-                sx={{
-                  background: "rgba(255, 255, 255, 0.4)",
-                  border: "none",
-                  display: { xs: "none", sm: "block" },
-                  "&:hover": {
-                    border: "1px solid black",
-                    background: "rgba(255, 255, 255, 0.4)",
-                  },
-                }}
-              >
-                <Typography
-                  variant="subtitle2"
-                  sx={{ color: "black", textTransform: "Capitalize" }}
-                >
-                  Contact me
-                </Typography>
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="h4"
-                sx={{
-                  display: "inline-block",
-                  color: "white",
-                }}
-              >
-                <InspoQuote />
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <KeyboardArrowDownOutlinedIcon
-                id="arrow"
-                className="arrow bounce"
-                sx={{ color: "white", fontSize: "80px" }}
-              />
-            </Grid>
-          </Grid>
-        </AppBar>
-      </Box>
-    </React.Fragment>
+          Zoe{" "}
+          <span style={{ color: "white", textShadow: "0 2px 16px rgba(0,0,0,0.35)" }}>
+            Kousteni
+          </span>
+        </h1>
+
+        <p
+          style={{
+            margin: "0 0 36px",
+            fontSize: "clamp(0.95rem, 2.2vw, 1.3rem)",
+            fontFamily: "Dosis, sans-serif",
+            color: "white",
+            textShadow: "0 1px 8px rgba(0,0,0,0.45)",
+            letterSpacing: "0.1em",
+            fontWeight: 600,
+          }}
+        >
+          Data Engineer&nbsp;&middot;&nbsp;Analytics and AI&nbsp;&middot;&nbsp;Rotterdam, NL Based
+        </p>
+
+        <div
+          style={{
+            maxWidth: 540,
+            background: "rgba(255,255,255,0.22)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            borderRadius: 20,
+            padding: "16px 28px",
+            marginBottom: 48,
+            fontStyle: "italic",
+            color: "white",
+            textShadow: "0 1px 4px rgba(0,0,0,0.3)",
+            fontSize: "0.95rem",
+            fontFamily: "Dosis, sans-serif",
+          }}
+        >
+          <InspoQuote />
+        </div>
+
+        <div className="arrow">
+          <a href="#about" aria-label="Scroll to about section">
+            <KeyboardArrowDownOutlinedIcon
+              className="bounce"
+              sx={{
+                fontSize: 56,
+                color: "white",
+                filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.35))",
+              }}
+            />
+          </a>
+        </div>
+      </div>
+    </>
   );
 };
+
 export default TopBar;

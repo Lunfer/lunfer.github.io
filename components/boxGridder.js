@@ -1,51 +1,25 @@
 import * as React from "react";
-import Grid from "@mui/material/Grid";
-import EducationBox from "./educationBox";
 import AboutMeBox from "./aboutMeBox";
+import EducationBox from "./educationBox";
 import ExpBox from "./expBox";
+import ProjectsBox from "./projectsBox";
 import SkillsetBox from "./skillsetBox";
+import CertificationsBox from "./certificationsBox";
 import ContactBox from "./contactBox";
 import QuestionsBox from "./questionsBox";
 
 const BoxGridder = () => {
   return (
-    <React.Fragment>
-      <Grid container spacing={5}>
-        <Grid item xs={8}>
-          <AboutMeBox />
-        </Grid>
-        <Grid item xs={3}>
-          <div></div>
-        </Grid>
-        <Grid item xs={4}>
-          <div></div>
-        </Grid>
-        <Grid item xs={8}>
-          <EducationBox />
-        </Grid>
-        <Grid item xs={8}>
-          <ExpBox />
-        </Grid>
-        <Grid item xs={4}>
-          <div></div>
-        </Grid>
-        <Grid item xs={4}>
-          <div></div>
-        </Grid>
-        <Grid item xs={8}>
-          <SkillsetBox />
-        </Grid>
-        <Grid item xs={8}>
-          <ContactBox />
-        </Grid>
-        <Grid item xs={4}>
-          <div></div>
-        </Grid>
-        <Grid item xs={12}>
-          <QuestionsBox />
-        </Grid>
-      </Grid>
-    </React.Fragment>
-  );
-};
-export default BoxGridder;
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "0 auto",
+        padding: "40px 24px 0",
+        display: "flex",
+        flexDirection: "column",
+        gap: 32,
+      }}
+    >
+      <AboutMeBox />
+      <EducationBox />
+    

@@ -7,12 +7,8 @@
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
-    "preinstall": "npx npm-force-resolutions"
+    "sync-linkedin": "node scripts/sync-from-linkedin.js"
   },
-  "resolutions": {
-    "glob-parent": "^6.0.1"
-  },
-  "preinstall": "npx npm-force-resolutions",
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
@@ -28,11 +24,11 @@
     "node-fetch": "^3.2.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-router-config": "^5.1.1",
     "react-router-dom": "^6.2.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "adm-zip": "^0.5.10",
     "eslint": "8.6.0",
     "eslint-config-next": "^0.2.4"
   }

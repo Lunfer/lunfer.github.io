@@ -1,118 +1,70 @@
-import styles from "../styles/Home.module.css";
 import * as React from "react";
-import Image from "next/image";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
+
+const STACK = [
+  { label: "Next.js", href: "https://nextjs.org/", icon: "/nextjs.svg" },
+  { label: "React", href: "https://reactjs.org/", icon: "/react.svg" },
+  { label: "Material UI", href: "https://mui.com/", icon: "/materialUI.svg" },
+  { label: "Figma", href: "https://www.figma.com/", icon: "/figma.svg" },
+];
 
 const CustomFooter = () => {
   return (
-    <React.Fragment>
-      <footer className={styles.footer}>
-        <Grid
-          container
-          direction="row"
-          spacing={0}
-          justifyContent="center"
-          alignItems="center"
+    <footer
+      style={{
+        background: "#3b2a1a",
+        color: "rgba(255,255,255,0.75)",
+        padding: "28px 32px",
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 16,
+        fontFamily: "Dosis, sans-serif",
+        fontSize: "0.82rem",
+        borderTop: "1px solid rgba(255,255,255,0.1)",
+      }}
+    >
+      {/* Left: copyright */}
+      <span>© {new Date().getFullYear()} Zoe Kousteni · Hosted on GitHub Pages</span>
+
+      {/* Centre: stack icons */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ marginRight: 8, opacity: 0.6 }}>Built with</span>
+        {STACK.map((s) => (
+          <a
+            key={s.label}
+            href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={s.label}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              opacity: 0.8,
+              transition: "opacity 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.8")}
+          >
+            <img src={s.icon} alt={s.label} width={24} height={14} style={{ display: "block" }} />
+          </a>
+        ))}
+      </div>
+
+      {/* Right: icon credit */}
+      <span>
+        Icons by{" "}
+        <a
+          href="https://icons8.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "rgba(255,255,255,0.9)", textDecoration: "underline" }}
         >
-          <Grid item xs={3}>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Typography variant="subtitle2">
-                Powered by{" "}
-                <span className={styles.logo}>
-                  <Image
-                    src="/vercel.svg"
-                    alt="Vercel Logo"
-                    width={62}
-                    height={14}
-                  />
-                </span>
-              </Typography>
-            </a>
-          </Grid>
-          <Grid item xs={6}>
-            <Grid
-              container
-              direction="row"
-              spacing={0}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Grid item xs={2}>
-                <Typography variant="subtitle2">Stack Used:</Typography>
-              </Grid>
-              <Grid item xs={1}>
-                <Link href="https://mui.com/" sx={{ paddingTop: "2px" }}>
-                  <Image
-                    src="/materialUI.svg"
-                    alt="Material UI Logo"
-                    width={30}
-                    height={16}
-                  />
-                </Link>
-              </Grid>
-              <Grid item xs={1}>
-                <Link href="https://nextjs.org/" sx={{ paddingTop: "2px" }}>
-                  <Image
-                    src="/nextjs.svg"
-                    alt="Next JS Logo"
-                    width={30}
-                    height={16}
-                  />
-                </Link>
-              </Grid>
-              <Grid item xs={1}>
-                <Link href="https://reactjs.org/" sx={{ paddingTop: "2px" }}>
-                  <Image
-                    src="/react.svg"
-                    alt="React JS Logo"
-                    width={30}
-                    height={16}
-                  />
-                </Link>
-              </Grid>
-              <Grid item xs={1}>
-                <Link href="https://www.figma.com/" sx={{ paddingTop: "2px" }}>
-                  <Image
-                    src="/figma.svg"
-                    alt="Figma Logo"
-                    width={30}
-                    height={16}
-                  />
-                </Link>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={3}>
-            <Grid
-              container
-              direction="row"
-              spacing={0}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Grid item>
-                <Typography variant="subtitle2">Laptop icon by </Typography>
-              </Grid>
-              <Grid item>
-                <Link
-                  target="_blank"
-                  href="https://icons8.com"
-                  underline="none"
-                >
-                  <Typography variant="subtitle2">Icons8</Typography>
-                </Link>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </footer>
-    </React.Fragment>
+          Icons8
+        </a>
+      </span>
+    </footer>
   );
 };
+
 export default CustomFooter;

@@ -1,70 +1,60 @@
 import * as React from "react";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import "aos/dist/aos.css";
+
+const QA = [
+  {
+    q: "What are your hobbies outside of work?",
+    a: "Working out and gaming — so yeah, pretty competitive by nature. But the goal is always to beat my past self, not anyone else. Getting 1% better every day is the real game.",
+  },
+  {
+    q: "Are you interested in learning new technologies?",
+    a: "Always. I love how technology evolves and becomes more ergonomic over time. Right now I'm deepening my full-stack skills and keeping a close eye on advances in ML and data visualisation — the future genuinely excites me.",
+  },
+  {
+    q: "What's the technical challenge you're most proud of?",
+    a: "Teaching myself a big chunk of HTML/CSS/JS with no formal front-end background — and then shipping real projects with it. It proved to me that passion has no ceiling.",
+  },
+  {
+    q: "What do you value most about a team?",
+    a: "Clear communication and smart task allocation. A well-organised team doesn't just deliver — it teaches and learns as it goes. That knowledge-sharing dynamic is incredibly powerful.",
+  },
+];
 
 const QuestionsBox = () => {
   return (
-    <React.Fragment>
-      <Box
-        data-aos="fade-down"
-        data-aos-easing="linear"
-        data-aos-anchor="#contactBox"
-        data-aos-anchor-placement="center-center"
-        sx={{
-          background: "rgba(255, 255, 255, 0.4)",
-          border: "none",
-          borderRadius: "40px",
-          justifyContent: "center",
-          padding: "20px",
-        }}
-      >
-        <Typography variant="h5" sx={{ borderBottom: "1px solid" }}>
-          Interviewing myself
-        </Typography>
-        <Typography variant="h6">
-          What are your hobbies outside of work?
-        </Typography>
-        <Typography variant="subtitle1">
-          I love to work out and play video games, so you can say I&apos;m
-          pretty competitive but the key is to always compete with my past self
-          rather than my fellow athletes/gamers/peers. Getting better in what I
-          do is one of my aspirations!
-        </Typography>
-        <Typography variant="h6">
-          Are you interested in learning new technologies? Which ones and why?
-        </Typography>
-        <Typography variant="subtitle1">
-          I am always interested in learning something new, I love the way
-          technology evolves and how it&apos;s getting more and more user
-          friendly and ergonomic. I am currently learning React as I would love
-          to give that &quot;breath of life&quot; to the websites I am making
-          and that React provides. As an aspiring Data Scientist, I&apos;m also
-          in love with every new way to visualise data, extract data as well as
-          use them in new machine learning algorithms! The future is exciting!
-        </Typography>
-        <Typography variant="h6">
-          What&apos;s the technical challenge you are most proud of?
-        </Typography>
-        <Typography variant="subtitle1">
-          For some, it may seem small, but having no educational background
-          around front-end &quot;magic&quot; and yet being able to learn a BIG
-          part of HTML/CSS/JS by myself is always going to be one of my proudest
-          moments. It really proved to me that my passion has no limits.
-        </Typography>
-        <Typography variant="h6">
-          What do you value the most about a team?
-        </Typography>
-        <Typography variant="subtitle1">
-          I strongly believe that a well-organised team in terms of both
-          communication and task allocation is a team that&apos;s soon going to
-          thrive and deliver. Every task that is assigned to a team rather than
-          an individual offers strong bonding on top of the possibility for
-          everyone to be taught or teach, something new. Isn&apos;t that
-          powerful?
-        </Typography>
-      </Box>
-    </React.Fragment>
+    <section className="glass-card">
+      <p className="section-label">06 — A little extra</p>
+      <h2 className="section-heading">Interviewing Myself</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        {QA.map(({ q, a }) => (
+          <div key={q}>
+            <p
+              style={{
+                margin: "0 0 6px",
+                fontWeight: 700,
+                fontSize: "1rem",
+                fontFamily: "Dosis, sans-serif",
+                color: "#1a1a1a",
+              }}
+            >
+              {q}
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.97rem",
+                lineHeight: 1.7,
+                color: "#333",
+                fontFamily: "Dosis, sans-serif",
+              }}
+            >
+              {a}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
+
 export default QuestionsBox;

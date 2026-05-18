@@ -1,40 +1,71 @@
 import * as React from "react";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import "aos/dist/aos.css";
+
+const EDUCATION = [
+  {
+    degree: "Bachelor of Engineering — Industrial Design & Production Engineering",
+    school: "University of West Attica, Athens, Greece",
+    period: "2014 — Oct 2023",
+    details: [
+      "Grade: 8.03 · 365 ECTs",
+      "Former Department of Automation Engineering",
+      "Activities: University Music Team",
+    ],
+    thesis: {
+      label: "Thesis: Human-Robot Interaction and Trust",
+      url: "https://polynoe.lib.uniwa.gr/xmlui/handle/11400/5720",
+    },
+  },
+  {
+    degree: "Erasmus+ Exchange — Electrical Engineering & Computer Science",
+    school: "University of Osijek, Osijek, Croatia",
+    period: "2018 — 2019",
+    details: [
+      "Courses: Cryptography and System Security",
+      "Earned A1 certificate in Croatian language",
+    ],
+    thesis: null,
+  },
+];
 
 const EducationBox = () => {
   return (
-    <React.Fragment>
-      <Box
-        id="educationBox"
-        data-aos="fade-left"
-        data-aos-anchor="#AboutMeBox"
-        data-aos-anchor-placement="center-center"
-        sx={{
-          background: "rgba(255, 255, 255, 0.4)",
-          border: "none",
-          borderRadius: "40px",
-          justifyContent: "center",
-          padding: "20px",
-        }}
-      >
-        <Typography variant="h5" sx={{ borderBottom: "1px solid" }}>
-          Education
-        </Typography>
-        <Typography variant="subtitle1">
-          Currently a senior student at the University of West Attica in the
-          department of Industrial Design and Production Engineering, formerly
-          known as the department of Automation Engineering, pursuing my
-          Bachelor&apos;s degree. {<br />} I have also successfully attended a
-          semester at the University of Osijek in Croatia, in the department of
-          Electrical Engineering and Computer Science, as an Erasmus+ student.
-          During this period I took up Croatian language courses that helped me
-          into getting my A1 degree, as well as some other courses like
-          &quot;Cryptography and System security&quot;.
-        </Typography>
-      </Box>
-    </React.Fragment>
+    <section id="education" className="glass-card">
+      <p className="section-label">02 — Education</p>
+      <h2 className="section-heading">Education</h2>
+
+      {EDUCATION.map((e, i) => (
+        <div key={i} className="timeline-entry">
+          <div className="timeline-role">{e.degree}</div>
+          <div className="timeline-company">{e.school}</div>
+          <div className="timeline-period">{e.period}</div>
+          <div className="timeline-desc">
+            {e.details.map((d, j) => (
+              <div key={j} style={{ marginBottom: 2 }}>{d}</div>
+            ))}
+            {e.thesis && (
+              <div style={{ marginTop: 8 }}>
+                <a
+                  href={e.thesis.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: "#1a1a1a",
+                    fontWeight: 700,
+                    textDecoration: "underline",
+                    textUnderlineOffset: 3,
+                    fontFamily: "Dosis, sans-serif",
+                  }}
+                >
+                  {e.thesis.label} ↗
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 };
+
 export default EducationBox;
