@@ -44,38 +44,73 @@ const CaseStudyBox = () => {
           ))}
         </div>
 
-        {/* CTA button */}
-        <a
-          href="/pulseclub-dashboard.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            background: "#446F6B",
-            color: "#fff",
-            border: "none",
-            borderRadius: 999,
-            padding: "10px 22px",
-            fontFamily: "Dosis, sans-serif",
-            fontWeight: 700,
-            fontSize: "0.88rem",
-            textDecoration: "none",
-            transition: "background 0.2s, box-shadow 0.2s",
-            boxShadow: "0 2px 10px rgba(68,111,107,0.25)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#355956";
-            e.currentTarget.style.boxShadow = "0 4px 18px rgba(68,111,107,0.35)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "#446F6B";
-            e.currentTarget.style.boxShadow = "0 2px 10px rgba(68,111,107,0.25)";
-          }}
-        >
-          📊 Interactive Dashboard
-        </a>
+        {/* CTA buttons */}
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <a
+            href="/pulseclub-dashboard.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "#446F6B",
+              color: "#fff",
+              border: "none",
+              borderRadius: 999,
+              padding: "10px 22px",
+              fontFamily: "Dosis, sans-serif",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              textDecoration: "none",
+              transition: "background 0.2s, box-shadow 0.2s",
+              boxShadow: "0 2px 10px rgba(68,111,107,0.25)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#355956";
+              e.currentTarget.style.boxShadow = "0 4px 18px rgba(68,111,107,0.35)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#446F6B";
+              e.currentTarget.style.boxShadow = "0 2px 10px rgba(68,111,107,0.25)";
+            }}
+          >
+            📊 Interactive Dashboard
+          </a>
+          <a
+            href="https://docs.google.com/document/d/1qu74Vogkef5gjQM9KEJQvP7IqxB1_ppI5mpVVOi51Yc/edit"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "transparent",
+              color: "#446F6B",
+              border: "2px solid #446F6B",
+              borderRadius: 999,
+              padding: "10px 22px",
+              fontFamily: "Dosis, sans-serif",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              textDecoration: "none",
+              transition: "background 0.2s, color 0.2s, box-shadow 0.2s",
+              boxShadow: "0 2px 10px rgba(68,111,107,0.10)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#446F6B";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.boxShadow = "0 4px 18px rgba(68,111,107,0.25)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "#446F6B";
+              e.currentTarget.style.boxShadow = "0 2px 10px rgba(68,111,107,0.10)";
+            }}
+          >
+            📄 Case Study Doc
+          </a>
+        </div>
       </div>
 
       {/* Preview — static snapshot of report page 1 */}
