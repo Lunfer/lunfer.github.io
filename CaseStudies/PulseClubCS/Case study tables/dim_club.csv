@@ -1,0 +1,30 @@
+ClubKey,CountryName,YearOpening,IsClub24_7,Presale,LadiesOnly,HasLiveGX,HasGXR,HasSportsWater,HasPhysiotherapist,HasPT,ClubSpace
+1084,Netherlands,2024,False,No presale,Mixed,LiveGX,No GXR,No SportsWater,No Physiotherapist,Personal Trainer,1338.7
+1342,Belgium,2023,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,No Personal Trainer,1205.4
+1088,France,2013,True,No presale,Mixed,LiveGX,GXR,SportsWater,No Physiotherapist,Personal Trainer,2569.8
+1303,France,2014,True,No presale,Mixed,No LiveGX,GXR,SportsWater,No Physiotherapist,No Personal Trainer,1470.6
+243,Netherlands,2014,False,No presale,Mixed,LiveGX,GXR,SportsWater,Physiotherapist,Personal Trainer,2531.4
+496,Belgium,2024,True,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,1429.8
+540,Netherlands,2021,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,711.0
+1522,Netherlands,2020,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,1415.4
+833,Netherlands,2024,False,No presale,Mixed,LiveGX,No GXR,No SportsWater,No Physiotherapist,Personal Trainer,1338.7
+737,Belgium,2020,True,No presale,Mixed,No LiveGX,No GXR,SportsWater,Physiotherapist,Personal Trainer,2080.2
+1721,Belgium,2024,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,1075.8
+392,Netherlands,2022,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,1669.8
+1025,Belgium,2022,True,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,863.4
+623,Netherlands,2015,False,No presale,Mixed,LiveGX,GXR,SportsWater,No Physiotherapist,Personal Trainer,1366.2
+463,Netherlands,2022,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,1060.2
+1650,Belgium,2018,True,No presale,Mixed,No LiveGX,GXR,SportsWater,No Physiotherapist,No Personal Trainer,1179.0
+1645,Belgium,2023,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,1012.2
+471,Belgium,2020,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,Personal Trainer,438.6
+897,Belgium,2019,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,No Personal Trainer,917.4
+1460,Belgium,2022,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,No Physiotherapist,No Personal Trainer,1099.8
+2001,Germany,2019,True,No presale,Mixed,LiveGX,GXR,No SportsWater,No Physiotherapist,Personal Trainer,1820.0
+2002,Spain,2021,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,Physiotherapist,Personal Trainer,2210.6
+2003,Germany,2022,True,No presale,Mixed,LiveGX,No GXR,No SportsWater,No Physiotherapist,Personal Trainer,1456.2
+2004,Germany,2023,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,Physiotherapist,Personal Trainer,1821.5
+2005,Germany,2021,True,No presale,Mixed,LiveGX,GXR,No SportsWater,No Physiotherapist,No Personal Trainer,1102.3
+2006,Germany,2024,False,Presale,Mixed,LiveGX,No GXR,SportsWater,Physiotherapist,Personal Trainer,2134.8
+2007,Spain,2022,True,No presale,Mixed,LiveGX,No GXR,No SportsWater,No Physiotherapist,Personal Trainer,1678.9
+2008,Spain,2023,False,No presale,Mixed,No LiveGX,No GXR,SportsWater,Physiotherapist,No Personal Trainer,1345.6
+2009,Spain,2021,True,Presale,Mixed,LiveGX,GXR,No SportsWater,No Physiotherapist,Personal Trainer,1923.4

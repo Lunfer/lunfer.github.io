@@ -3,6 +3,7 @@ import AboutMeBox from "./aboutMeBox";
 import EducationBox from "./educationBox";
 import ExpBox from "./expBox";
 import ProjectsBox from "./projectsBox";
+import CaseStudyBox from "./caseStudyBox";
 import SkillsetBox from "./skillsetBox";
 import CertificationsBox from "./certificationsBox";
 import ContactBox from "./contactBox";
@@ -24,6 +25,7 @@ const BoxGridder = () => {
       <EducationBox />
       <ExpBox />
       <ProjectsBox />
+      <CaseStudyBox />
       <SkillsetBox />
       <CertificationsBox />
       <ContactBox />

@@ -22,6 +22,7 @@
     "next": "^12.0.8",
     "next-optimized-images": "^2.6.2",
     "node-fetch": "^3.2.0",
+    "puppeteer": "^25.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-router-dom": "^6.2.1",

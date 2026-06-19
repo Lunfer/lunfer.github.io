@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=1920"/>
+<title>PulseClub Analytics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#2e4e4a;--teal-mid:#3d6460;--teal-light:#8FAEAB;
+  --page-bg:#E4E8EC;--card-bg:#f2f5f7;--white:#ffffff;
+  --text:#2e3338;--muted:#6b7a84;--border:#c8d4dc;--grid:#d0dce4;
+  --c-nl:#446F6B;--c-be:#8FA7D4;--c-fr:#F0C97A;--c-de:#A8D5A2;--c-es:#C9A8D4;
+  /* CF colours matching Power BI model exactly */
+  --cf-red-bg:#F9CECE;  --cf-red-fg:#A32D2D;
+  --cf-amb-bg:#FAEEDA;  --cf-amb-fg:#854F0B;
+  --cf-grn-bg:#EAF3DE;  --cf-grn-fg:#3B6D11;
+  /* tier colours */
+  --diamond:#F0C97A;--gold:#8FA7D4;--platinum:#C9A8D4;--silver:#8FAEAB;--limited:#D4C4A8;
+}
+
+html{background:#b8bec5;overflow:auto}
+body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);font-size:12px;background:transparent;
+  display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px}
+
+/* Fixed-size report 1920×1080, centered */
+#report-root{width:1920px;height:1080px;background:var(--page-bg);position:relative;overflow:visible;flex-shrink:0}
+
+/* ── Nav bar ── */
+.topnav{background:var(--teal);color:#fff;display:flex;align-items:center;height:46px;padding:0 16px;user-select:none;position:relative;z-index:10}
+.topnav .back{font-size:18px;cursor:pointer;padding:0 12px;opacity:.8}
+.topnav .brand{font-weight:700;font-size:1rem;padding:0 16px;border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25)}
+.topnav .page-title{font-size:.95rem;font-weight:400;padding:0 16px;opacity:.9;flex:1}
+.page-tabs{display:flex;margin-left:auto}
+.page-tab{padding:0 22px;height:46px;display:flex;align-items:center;font-size:.82rem;cursor:pointer;border-left:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);white-space:nowrap;transition:background .15s}
+.page-tab:hover{background:rgba(255,255,255,.1)}
+.page-tab.active{background:var(--card-bg);color:var(--text);font-weight:600}
+.filters-btn{background:var(--teal-mid);border:none;color:#fff;padding:0 22px;height:46px;font-size:.82rem;font-family:inherit;cursor:pointer;border-left:1px solid rgba(255,255,255,.2)}
+.filters-btn:hover{background:#2a3d3a}
+
+/* ── Pages ── */
+.page{display:none;padding:14px 16px;gap:14px;height:1034px}
+.page.active{display:grid}
+
+/* ── Cards ── */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:8px}
+.card-title{font-size:.78rem;font-weight:700;color:var(--text)}
+.card-sub{font-size:.68rem;color:var(--muted);margin-top:-4px}
+.chart-area{position:relative;flex:1;min-height:0}
+.chart-area canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+
+/* ── Page 1 grid ── */
+#page1{grid-template-columns:600px 1fr;grid-template-rows:108px 240px 1fr;
+       grid-template-areas:"left kpis""left visits""left scores"}
+.p1-left{grid-area:left;display:flex;flex-direction:column;gap:14px;min-height:0}
+.p1-kpis{grid-area:kpis}
+.p1-visits{grid-area:visits}
+.p1-scores{grid-area:scores;min-height:0;overflow:hidden}
+
+/* ── Summary box ── */
+.summary-box{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:14px 16px}
+.summary-box h3{font-size:.82rem;font-weight:700;margin-bottom:8px}
+.summary-box p{font-size:.75rem;line-height:1.65;color:var(--text);padding-left:12px;border-left:3px solid var(--border);margin-left:2px}
+.summary-box u{color:var(--teal);cursor:default;text-decoration:underline dotted}
+
+/* ── KPI row ── */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:14px 18px}
+.kpi-label{font-size:.7rem;color:var(--muted);margin-bottom:6px}
+.kpi-main{display:flex;align-items:center;gap:10px}
+.kpi-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.kpi-value{font-size:2rem;font-weight:700;color:var(--text);line-height:1}
+.kpi-delta{font-size:.82rem;margin-left:auto;text-align:right;line-height:1.6}
+.kpi-date{font-size:.65rem;color:var(--muted);margin-top:2px}
+
+/* ── Visits "see more" link ── */
+.see-more{font-size:.68rem;color:var(--teal);cursor:pointer;margin-left:auto;align-self:flex-start;line-height:1}
+.see-more:hover{text-decoration:underline}
+
+/* ── Scores table ── */
+.scores-table{width:100%;border-collapse:collapse;font-size:.74rem}
+.scores-table th{background:var(--teal-light);color:var(--text);padding:5px 8px;text-align:left;font-weight:700;font-size:.68rem;white-space:nowrap;position:sticky;top:0;z-index:1;cursor:pointer}
+.scores-table th:hover{background:#7a9e9b}
+.scores-table td{padding:4px 8px;border-bottom:1px solid var(--grid)}
+.scores-table tr:hover td{background:rgba(68,111,107,.06)}
+.cell-heat{border-radius:3px;padding:2px 6px;text-align:center;font-weight:600;display:inline-block;min-width:38px}
+.weakest-chip{border-radius:4px;padding:2px 7px;font-size:.67rem;font-weight:700;display:inline-block;white-space:nowrap}
+.table-scroll{overflow-y:auto;overflow-x:auto;flex:1;min-height:0;max-height:100%}
+
+/* ── Page 2 grid ── */
+#page2{grid-template-columns:600px 1fr;grid-template-rows:1fr 1fr;
+       grid-template-areas:"friend bubble""friend newmems"}
+.p2-friend{grid-area:friend;min-height:0}
+.p2-bubble{grid-area:bubble}
+.p2-newmems{grid-area:newmems}
+
+/* ── Legend rows ── */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;font-size:.68rem;color:var(--muted)}
+.leg-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;vertical-align:middle}
+.leg-sq{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:middle}
+
+/* ── Filters panel ── */
+.filters-panel{display:none;position:absolute;top:46px;right:0;width:290px;
+  background:var(--white);border:1px solid var(--border);border-radius:0 0 0 20px;
+  box-shadow:-4px 6px 24px rgba(0,0,0,.18);padding:16px 20px;z-index:1000;flex-direction:column;gap:14px}
+.filters-panel.open{display:flex}
+.fp-close{background:none;border:none;font-size:1rem;cursor:pointer;color:var(--muted);line-height:1;padding:0;margin-left:auto}
+.fp-close:hover{color:var(--text)}
+.fp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.fp-header-title{font-size:.78rem;font-weight:700;color:var(--text)}
+.fp-section{display:flex;flex-direction:column;gap:5px}
+.fp-label{font-size:.72rem;font-weight:700;color:var(--text);display:flex;justify-content:space-between}
+.fp-label span{font-weight:400;color:var(--teal);font-size:.68rem;cursor:pointer}
+.fp-label span:hover{text-decoration:underline}
+.fp-date-row{display:flex;gap:6px;align-items:center;font-size:.7rem;color:var(--muted)}
+.fp-date-row input[type=date]{flex:1;border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:.72rem;font-family:inherit;color:var(--text)}
+.fp-select{width:100%;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:.72rem;font-family:inherit;color:var(--text);background:var(--white)}
+.fp-apply{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px}
+.fp-apply:hover{background:var(--teal-mid)}
+.fp-reset{background:none;border:1px solid var(--border);border-radius:8px;padding:6px;font-family:inherit;font-size:.72rem;cursor:pointer;width:100%;color:var(--muted)}
+.fp-reset:hover{background:var(--card-bg)}
+
+/* ── Custom tooltip ── */
+#tt{position:fixed;background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:10px 13px;font-size:.72rem;pointer-events:none;z-index:500;display:none;
+  min-width:190px;max-width:260px;box-shadow:0 4px 18px rgba(0,0,0,.16)}
+.tt-title{font-weight:700;margin-bottom:6px;font-size:.78rem;display:flex;justify-content:space-between;gap:12px}
+.tt-row{display:flex;justify-content:space-between;gap:14px;padding:2px 0;color:var(--muted)}
+.tt-row b{color:var(--text)}
+.tt-sep{border:none;border-top:1px solid var(--grid);margin:6px 0}
+.tt-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.tt-bar-lbl{width:90px;text-align:right;font-size:.67rem;color:var(--muted);flex-shrink:0}
+.tt-bar-track{flex:1;background:var(--grid);border-radius:2px;height:8px;overflow:hidden}
+.tt-bar-fill{height:100%;border-radius:2px}
+.tt-bar-val{width:30px;font-size:.67rem;font-weight:600;color:var(--text)}
+.tt-tier-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.tt-tier-lbl{width:65px;font-size:.67rem;color:var(--muted)}
+.tt-tier-track{flex:1;background:var(--grid);border-radius:2px;height:8px;overflow:hidden}
+.tt-tier-fill{height:100%;border-radius:2px}
+.tt-tier-val{width:38px;font-size:.67rem;font-weight:600;color:var(--text);text-align:right}
+
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px;padding:24px;width:700px;max-height:85vh;overflow:auto;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.25)}
+.modal-close{position:absolute;top:14px;right:18px;font-size:1.1rem;cursor:pointer;color:var(--muted);background:none;border:none}
+.modal-close:hover{color:var(--text)}
+.modal h3{font-size:.92rem;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:.72rem;color:var(--muted);margin-bottom:16px}
+.modal-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.modal-kpi{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;text-align:center}
+.mk-label{font-size:.68rem;color:var(--muted)}
+.mk-value{font-size:1.4rem;font-weight:700;color:var(--text)}
+.modal-table{width:100%;border-collapse:collapse;font-size:.75rem}
+.modal-table th{background:var(--card-bg);border-bottom:2px solid var(--border);padding:6px 10px;text-align:left;font-weight:700;font-size:.68rem;color:var(--muted);text-transform:uppercase}
+.modal-table td{padding:5px 10px;border-bottom:1px solid var(--grid)}
+.modal-table tr.yr-row td{font-weight:700;background:rgba(68,111,107,.04)}
+.modal-table tr.tot-row td{font-weight:700;border-top:2px solid var(--border)}
+.expand-btn{cursor:pointer;color:var(--teal);margin-right:4px;font-size:.7rem}
+</style>
+</head>
+<body>
+<div id="tt"></div>
+
+<div id="report-root">
+
+  <!-- NAV -->
+  <div class="topnav">
+    <span class="back" id="backBtn" onclick="handleBack()">&#8592;</span>
+    <span class="brand">PulseClub</span>
+    <span class="page-title" id="navTitle">Club Performance Overview</span>
+    <div class="page-tabs">
+      <div class="page-tab active" id="tab1" onclick="showPage(1)">Club Performance Overview</div>
+      <div class="page-tab"        id="tab2" onclick="showPage(2)">Members and Engagement Deep Dive</div>
+    </div>
+    <button class="filters-btn" onclick="toggleFilters()">Filters</button>
+  </div>
+
+  <!-- FILTERS PANEL -->
+  <div class="filters-panel" id="filtersPanel">
+    <div class="fp-header">
+      <span class="fp-header-title">Filters</span>
+      <button class="fp-close" onclick="toggleFilters()">&#x2715;</button>
+    </div>
+
+    <div class="fp-section">
+      <div class="fp-label">Country <span onclick="document.getElementById('f-country').value='All'">Reset</span></div>
+      <select class="fp-select" id="f-country">
+        <option value="All">All</option>
+        <option>Netherlands</option><option>Belgium</option><option>France</option>
+        <option>Germany</option><option>Spain</option>
+      </select>
+    </div>
+
+    <div class="fp-section" id="fp-club-wrap">
+      <div class="fp-label">Club <span onclick="document.getElementById('f-club').value='All'">Reset</span></div>
+      <select class="fp-select" id="f-club"><option value="All">All</option></select>
+    </div>
+
+    <div class="fp-section" id="fp-mem-wrap" style="display:none">
+      <div class="fp-label">Membership <span onclick="document.getElementById('f-mem').value='All'">Reset</span></div>
+      <select class="fp-select" id="f-mem">
+        <option value="All">All</option>
+        <option>Diamond</option><option>Gold</option><option>Platinum</option>
+        <option>Silver</option><option>Limited</option>
+      </select>
+    </div>
+
+    <button class="fp-apply" onclick="applyFilters()">Apply Filters</button>
+    <button class="fp-reset" onclick="resetAllFilters()">Reset All</button>
+  </div>
+
+  <!-- ══ PAGE 1 ══ -->
+  <div class="page active" id="page1">
+
+    <div class="p1-left">
+      <div class="summary-box">
+        <h3>Summary</h3>
+        <p>So far, PulseClub recorded <u>96.058 visits</u> and <u>46.226 active members</u>.<br>
+        Membership is growing with <u>113.311 joiners</u> and <u>95.924 leavers</u> this period.<br>
+        Overall satisfaction is moderate at <u>82,4 out of 100</u>.<br>
+        Members rate Crowdedness as the biggest improvement area (78,1 average).<br>
+        12,1% of visits were with a friend.</p>
+      </div>
+
+      <div class="card" style="flex:1;min-height:0">
+        <div class="card-title">Average Review Score per Club ID</div>
+        <div class="card-sub">Top 10 Reviewed Clubs — Which clubs are pulling down the overall score?</div>
+        <div class="chart-area"><canvas id="clubReviewChart"></canvas></div>
+        <div class="legend">
+          <span><span class="leg-dot" style="background:rgba(46,78,74,0.80)"></span>Total Reviews</span>
+          <span><span class="leg-dot" style="background:rgba(143,167,212,0.75)"></span>Average Score</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI CARDS — big bold = all-time total; right side = current month value + "As of" date
+         RAG dot on big number reflects current month MoM trend -->
+    <div class="p1-kpis kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Visits</div>
+        <div class="kpi-main">
+          <div class="kpi-dot" id="dot-visits" style="background:#E8907A"></div>
+          <div class="kpi-value" id="val-visits">96.058</div>
+          <div class="kpi-delta" id="delta-visits">
+            2.250<br><span class="kpi-date" id="date-visits">As of: 01.05.2026</span>
+          </span>
+          </span>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Members</div>
+        <div class="kpi-main">
+          <div class="kpi-dot" id="dot-members" style="background:#F0C97A"></div>
+          <div class="kpi-value" id="val-members">122.505</div>
+          <div class="kpi-delta" id="delta-members">
+            46.226<br><span class="kpi-date" id="date-members">As of: 01.05.2026</span>
+          </span>
+          </span>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Average Score</div>
+        <div class="kpi-main">
+          <div class="kpi-dot" id="dot-score" style="background:#E8907A"></div>
+          <div class="kpi-value" id="val-score">82,4</div>
+          <div class="kpi-delta" id="delta-score">
+            77,6<br><span class="kpi-date" id="date-score">As of: 01.05.2026</span>
+          </span>
+          </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p1-visits card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <div class="card-title">Visits over Time</div>
+          <div class="card-sub">YtD Overview — Is daily visit volume trending as expected?</div>
+        </div>
+        <span class="see-more" onclick="openVisitsModal()">See more &gt;</span>
+      </div>
+      <div class="chart-area"><canvas id="visitsChart"></canvas></div>
+    </div>
+
+    <div class="p1-scores card">
+      <div class="card-title">Scores Overview</div>
+      <div class="card-sub">Average of all dimensions' scores per Club ID — Where does each club have the most room to improve?</div>
+      <div class="table-scroll">
+        <table class="scores-table" id="scoresTable">
+          <thead><tr>
+            <th onclick="sortTable(0)">Club ID &#8597;</th>
+            <th onclick="sortTable(1)">Reviews &#8597;</th>
+            <th onclick="sortTable(2)">Overall &#8597;</th>
+            <th>Weakest Score</th>
+            <th onclick="sortTable(4)">Atmosphere &#8597;</th>
+            <th onclick="sortTable(5)">Crowdedness &#8597;</th>
+            <th onclick="sortTable(6)">Equipment &#8597;</th>
+            <th onclick="sortTable(7)">Hygiene &#8597;</th>
+            <th onclick="sortTable(8)">Staff &#8597;</th>
+          </tr></thead>
+          <tbody id="scoresBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2 ══ -->
+  <div class="page" id="page2">
+
+    <div class="p2-friend card">
+      <div class="card-title">Top Clubs by Friend Visits</div>
+      <div class="card-sub">Do the busiest clubs for friend visits also turn guests into members?</div>
+      <div class="chart-area"><canvas id="friendChart"></canvas></div>
+      <div class="legend">
+        <span><span class="leg-dot" style="background:var(--c-be)"></span>Belgium</span>
+        <span><span class="leg-dot" style="background:var(--c-fr)"></span>France</span>
+        <span><span class="leg-dot" style="background:var(--c-de)"></span>Germany</span>
+        <span><span class="leg-dot" style="background:var(--c-nl)"></span>Netherlands</span>
+        <span><span class="leg-dot" style="background:var(--c-es)"></span>Spain</span>
+      </div>
+    </div>
+
+    <div class="p2-bubble card">
+      <div class="card-title">Club Visits vs. Satisfaction Score</div>
+      <div class="card-sub">Does higher footfall impact member experience?</div>
+      <div class="chart-area"><canvas id="bubbleChart"></canvas></div>
+      <div class="legend">
+        <span><span class="leg-dot" style="background:var(--c-be)"></span>Belgium</span>
+        <span><span class="leg-dot" style="background:var(--c-fr)"></span>France</span>
+        <span><span class="leg-dot" style="background:var(--c-de)"></span>Germany</span>
+        <span><span class="leg-dot" style="background:var(--c-nl)"></span>Netherlands</span>
+        <span><span class="leg-dot" style="background:var(--c-es)"></span>Spain</span>
+      </div>
+    </div>
+
+    <div class="p2-newmems card">
+      <div class="card-title">New Memberships over Time</div>
+      <div class="card-sub">Which membership tier drives seasonal peaks?</div>
+      <div class="chart-area"><canvas id="newMemsChart"></canvas></div>
+      <div class="legend">
+        <span><span class="leg-sq" style="background:var(--diamond)"></span>Diamond</span>
+        <span><span class="leg-sq" style="background:var(--gold)"></span>Gold</span>
+        <span><span class="leg-sq" style="background:var(--platinum)"></span>Platinum</span>
+        <span><span class="leg-sq" style="background:var(--silver)"></span>Silver</span>
+        <span><span class="leg-sq" style="background:var(--limited)"></span>Limited</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- #report-root -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="visitsModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <h3>Visits over Time</h3>
+    <div class="modal-sub">Visits, New Joiners and Leavers per Club ID over Time</div>
+    <div class="modal-kpis">
+      <div class="modal-kpi"><div class="mk-label">Joiners</div><div class="mk-value">113.311</div></div>
+      <div class="modal-kpi"><div class="mk-label">Leavers</div><div class="mk-value">95.924</div></div>
+      <div class="modal-kpi"><div class="mk-label">Net Growth</div><div class="mk-value">17.387</div></div>
+    </div>
+    <table class="modal-table">
+      <thead><tr><th>Period</th><th>Visits</th><th>Active Members</th><th>Net Growth</th><th>Joiners</th><th>Leavers</th><th>Friend Visits</th></tr></thead>
+      <tbody id="modalBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ── chart references ──────────────────────────────────────────────────────────
+let chReview, chVisits, chFriend, chBubble, chNewMems;
+
+// ── colour helpers ────────────────────────────────────────────────────────────
+const CC = {Netherlands:'#446F6B',Belgium:'#8FA7D4',France:'#F0C97A',Germany:'#A8D5A2',Spain:'#C9A8D4'};
+const cC = c => CC[c] || '#999';
+const cCode = c => ({Netherlands:'NL',Belgium:'BE',France:'FR',Germany:'DE',Spain:'ES'})[c] || '?';
+
+// ── CF colour logic matching Power BI DAX exactly ──────────────────────────
+// Individual dimension thresholds: <75 = red, <85 = amber, ≥85 = green
+// Overall score threshold: <78 = red (not 75), <85 = amber, ≥85 = green
+function cfBg(v, isOverall){
+  const lo = isOverall ? 78 : 75;
+  if(v < lo)   return '#F9CECE';
+  if(v < 85)   return '#FAEEDA';
+  return '#EAF3DE';
+}
+function cfFg(v, isOverall){
+  const lo = isOverall ? 78 : 75;
+  if(v < lo)   return '#A32D2D';
+  if(v < 85)   return '#854F0B';
+  return '#3B6D11';
+}
+
+// ── de-DE number formatting (dot as thousands separator) ─────────────────────
+function fmtDE(n, decimals=0){
+  return Number(n).toLocaleString('de-DE', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
+}
+
+// ── DATA ── (auto-generated by generate_dashboard_data.py — do not edit manually)
+const REVIEWS = [
+  {id:833, country:"Netherlands",reviews:1759,overall:73.6,weakest:"Crowdedness",wval:65.8,atm:74.3,crowd:65.8,equip:78.1,hyg:80.3,staff:69.5},
+  {id:1088, country:"France",reviews:1111,overall:80.1,weakest:"Staff",wval:73.3,atm:83.6,crowd:76.2,equip:84.6,hyg:82.8,staff:73.3},
+  {id:1084, country:"Netherlands",reviews:1076,overall:74.6,weakest:"Crowdedness",wval:67.8,atm:76.4,crowd:67.8,equip:76.1,hyg:80.0,staff:72.9},
+  {id:623, country:"Netherlands",reviews:1043,overall:79.7,weakest:"Crowdedness",wval:74.7,atm:81.1,crowd:74.7,equip:80.4,hyg:83.9,staff:78.6},
+  {id:737, country:"Belgium",reviews:1028,overall:83.1,weakest:"Staff",wval:75.2,atm:87.4,crowd:81.7,equip:87.2,hyg:84.1,staff:75.2},
+  {id:1303, country:"France",reviews:987,overall:78.0,weakest:"Staff",wval:67.7,atm:83.0,crowd:79.7,equip:80.3,hyg:79.5,staff:67.7},
+  {id:2004, country:"Germany",reviews:920,overall:84.4,weakest:"Crowdedness",wval:69.3,atm:86.4,crowd:69.3,equip:89.5,hyg:88.2,staff:88.6},
+  {id:1025, country:"Belgium",reviews:897,overall:81.2,weakest:"Crowdedness",wval:77.0,atm:83.0,crowd:77.0,equip:86.0,hyg:82.9,staff:77.1},
+  {id:1645, country:"Belgium",reviews:873,overall:89.4,weakest:"Staff",wval:83.1,atm:90.9,crowd:88.4,equip:93.0,hyg:91.4,staff:83.1},
+  {id:496, country:"Belgium",reviews:841,overall:89.1,weakest:"Staff",wval:83.5,atm:91.0,crowd:87.6,equip:92.8,hyg:90.8,staff:83.5},
+  {id:2007, country:"Spain",reviews:840,overall:86.6,weakest:"Crowdedness",wval:75.1,atm:89.8,crowd:75.1,equip:88.5,hyg:88.9,staff:90.6},
+  {id:471, country:"Belgium",reviews:823,overall:85.4,weakest:"Staff",wval:78.2,atm:88.2,crowd:84.7,equip:89.2,hyg:86.5,staff:78.2},
+  {id:1650, country:"Belgium",reviews:809,overall:88.0,weakest:"Staff",wval:81.8,atm:89.2,crowd:86.4,equip:91.0,hyg:91.5,staff:81.8},
+  {id:2003, country:"Germany",reviews:780,overall:82.0,weakest:"Crowdedness",wval:77.4,atm:80.1,crowd:77.4,equip:84.6,hyg:85.7,staff:82.4},
+  {id:392, country:"Netherlands",reviews:726,overall:83.5,weakest:"Crowdedness",wval:77.7,atm:85.7,crowd:77.7,equip:86.5,hyg:89.3,staff:78.1},
+  {id:540, country:"Netherlands",reviews:722,overall:81.6,weakest:"Crowdedness",wval:73.2,atm:81.2,crowd:73.2,equip:84.8,hyg:87.0,staff:81.8},
+  {id:2009, country:"Spain",reviews:710,overall:86.3,weakest:"Crowdedness",wval:80.0,atm:88.2,crowd:80.0,equip:86.4,hyg:89.7,staff:87.4},
+  {id:463, country:"Netherlands",reviews:699,overall:82.2,weakest:"Crowdedness",wval:70.7,atm:81.0,crowd:70.7,equip:87.8,hyg:89.9,staff:81.5},
+  {id:2005, country:"Germany",reviews:650,overall:78.8,weakest:"Equipment",wval:77.0,atm:78.1,crowd:81.9,equip:77.0,hyg:79.9,staff:77.3},
+  {id:1721, country:"Belgium",reviews:632,overall:86.7,weakest:"Staff",wval:81.5,atm:87.0,crowd:84.7,equip:90.5,hyg:89.8,staff:81.5},
+  {id:1522, country:"Netherlands",reviews:619,overall:85.4,weakest:"Crowdedness",wval:80.2,atm:86.8,crowd:80.2,equip:87.8,hyg:87.6,staff:84.4},
+  {id:2001, country:"Germany",reviews:612,overall:79.1,weakest:"Staff",wval:76.9,atm:79.0,crowd:78.0,equip:79.2,hyg:82.4,staff:76.9},
+  {id:1342, country:"Belgium",reviews:595,overall:90.7,weakest:"Staff",wval:84.5,atm:92.3,crowd:90.6,equip:93.1,hyg:93.0,staff:84.5},
+  {id:243, country:"Netherlands",reviews:561,overall:82.7,weakest:"Staff",wval:77.9,atm:84.7,crowd:80.5,equip:84.3,hyg:85.9,staff:77.9},
+  {id:2002, country:"Spain",reviews:541,overall:83.3,weakest:"Crowdedness",wval:79.5,atm:84.4,crowd:79.5,equip:82.6,hyg:86.4,staff:83.8},
+  {id:1460, country:"Belgium",reviews:535,overall:88.3,weakest:"Crowdedness",wval:86.0,atm:88.4,crowd:86.0,equip:91.0,hyg:89.5,staff:86.4},
+  {id:2008, country:"Spain",reviews:520,overall:77.6,weakest:"Crowdedness",wval:71.6,atm:78.3,crowd:71.6,equip:79.2,hyg:80.9,staff:77.9},
+  {id:2006, country:"Germany",reviews:310,overall:84.8,weakest:"Equipment",wval:81.9,atm:84.8,crowd:88.4,equip:81.9,hyg:85.5,staff:83.3},
+  {id:897, country:"Belgium",reviews:211,overall:84.7,weakest:"Staff",wval:78.9,atm:86.2,crowd:84.2,equip:86.9,hyg:87.2,staff:78.9}
+];
+
+const MV = [
+  {l:"2025-07-01",v:43},
+  {l:"2025-07-02",v:42},
+  {l:"2025-07-03",v:37},
+  {l:"2025-07-04",v:32},
+  {l:"2025-07-05",v:36},
+  {l:"2025-07-06",v:28},
+  {l:"2025-07-07",v:35},
+  {l:"2025-07-08",v:47},
+  {l:"2025-07-09",v:33},
+  {l:"2025-07-10",v:43},
+  {l:"2025-07-11",v:32},
+  {l:"2025-07-12",v:35},
+  {l:"2025-07-13",v:25},
+  {l:"2025-07-14",v:44},
+  {l:"2025-07-15",v:35},
+  {l:"2025-07-16",v:28},
+  {l:"2025-07-17",v:40},
+  {l:"2025-07-18",v:36},
+  {l:"2025-07-19",v:29},
+  {l:"2025-07-20",v:33},
+  {l:"2025-07-21",v:34},
+  {l:"2025-07-22",v:34},
+  {l:"2025-07-23",v:36},
+  {l:"2025-07-24",v:34},
+  {l:"2025-07-25",v:39},
+  {l:"2025-07-26",v:19},
+  {l:"2025-07-27",v:38},
+  {l:"2025-07-28",v:38},
+  {l:"2025-07-29",v:49},
+  {l:"2025-07-30",v:28},
+  {l:"2025-07-31",v:32},
+  {l:"2025-08-01",v:29},
+  {l:"2025-08-02",v:27},
+  {l:"2025-08-03",v:36},
+  {l:"2025-08-04",v:43},
+  {l:"2025-08-05",v:60},
+  {l:"2025-08-06",v:36},
+  {l:"2025-08-07",v:35},
+  {l:"2025-08-08",v:27},
+  {l:"2025-08-09",v:32},
+  {l:"2025-08-10",v:27},
+  {l:"2025-08-11",v:34},
+  {l:"2025-08-12",v:28},
+  {l:"2025-08-13",v:34},
+  {l:"2025-08-14",v:34},
+  {l:"2025-08-15",v:40},
+  {l:"2025-08-16",v:36},
+  {l:"2025-08-17",v:34},
+  {l:"2025-08-18",v:40},
+  {l:"2025-08-19",v:29},
+  {l:"2025-08-20",v:44},
+  {l:"2025-08-21",v:51},
+  {l:"2025-08-22",v:30},
+  {l:"2025-08-23",v:34},
+  {l:"2025-08-24",v:23},
+  {l:"2025-08-25",v:40},
+  {l:"2025-08-26",v:39},
+  {l:"2025-08-27",v:40},
+  {l:"2025-08-28",v:28},
+  {l:"2025-08-29",v:22},
+  {l:"2025-08-30",v:34},
+  {l:"2025-08-31",v:40},
+  {l:"2025-09-01",v:29},
+  {l:"2025-09-02",v:38},
+  {l:"2025-09-03",v:36},
+  {l:"2025-09-04",v:40},
+  {l:"2025-09-05",v:38},
+  {l:"2025-09-06",v:29},
+  {l:"2025-09-07",v:38},
+  {l:"2025-09-08",v:39},
+  {l:"2025-09-09",v:29},
+  {l:"2025-09-10",v:33},
+  {l:"2025-09-11",v:40},
+  {l:"2025-09-12",v:42},
+  {l:"2025-09-13",v:33},
+  {l:"2025-09-14",v:40},
+  {l:"2025-09-15",v:47},
+  {l:"2025-09-16",v:49},
+  {l:"2025-09-17",v:34},
+  {l:"2025-09-18",v:45},
+  {l:"2025-09-19",v:41},
+  {l:"2025-09-20",v:25},
+  {l:"2025-09-21",v:36},
+  {l:"2025-09-22",v:41},
+  {l:"2025-09-23",v:35},
+  {l:"2025-09-24",v:33},
+  {l:"2025-09-25",v:44},
+  {l:"2025-09-26",v:42},
+  {l:"2025-09-27",v:36},
+  {l:"2025-09-28",v:25},
+  {l:"2025-09-29",v:55},
+  {l:"2025-09-30",v:37},
+  {l:"2025-10-01",v:52},
+  {l:"2025-10-02",v:45},
+  {l:"2025-10-03",v:34},
+  {l:"2025-10-04",v:40},
+  {l:"2025-10-05",v:42},
+  {l:"2025-10-06",v:46},
+  {l:"2025-10-07",v:38},
+  {l:"2025-10-08",v:48},
+  {l:"2025-10-09",v:38},
+  {l:"2025-10-10",v:39},
+  {l:"2025-10-11",v:35},
+  {l:"2025-10-12",v:31},
+  {l:"2025-10-13",v:35},
+  {l:"2025-10-14",v:39},
+  {l:"2025-10-15",v:30},
+  {l:"2025-10-16",v:37},
+  {l:"2025-10-17",v:37},
+  {l:"2025-10-18",v:34},
+  {l:"2025-10-19",v:25},
+  {l:"2025-10-20",v:32},
+  {l:"2025-10-21",v:30},
+  {l:"2025-10-22",v:31},
+  {l:"2025-10-23",v:39},
+  {l:"2025-10-24",v:29},
+  {l:"2025-10-25",v:27},
+  {l:"2025-10-26",v:31},
+  {l:"2025-10-27",v:23},
+  {l:"2025-10-28",v:39},
+  {l:"2025-10-29",v:27},
+  {l:"2025-10-30",v:39},
+  {l:"2025-10-31",v:34},
+  {l:"2025-11-01",v:42},
+  {l:"2025-11-02",v:40},
+  {l:"2025-11-03",v:44},
+  {l:"2025-11-04",v:49},
+  {l:"2025-11-05",v:35},
+  {l:"2025-11-06",v:32},
+  {l:"2025-11-07",v:28},
+  {l:"2025-11-08",v:25},
+  {l:"2025-11-09",v:24},
+  {l:"2025-11-10",v:20},
+  {l:"2025-11-11",v:22},
+  {l:"2025-11-12",v:25},
+  {l:"2025-11-13",v:28},
+  {l:"2025-11-14",v:36},
+  {l:"2025-11-15",v:25},
+  {l:"2025-11-16",v:21},
+  {l:"2025-11-17",v:24},
+  {l:"2025-11-18",v:14},
+  {l:"2025-11-19",v:26},
+  {l:"2025-11-20",v:17},
+  {l:"2025-11-21",v:24},
+  {l:"2025-11-22",v:26},
+  {l:"2025-11-23",v:27},
+  {l:"2025-11-24",v:27},
+  {l:"2025-11-25",v:22},
+  {l:"2025-11-26",v:15},
+  {l:"2025-11-27",v:19},
+  {l:"2025-11-28",v:29},
+  {l:"2025-11-29",v:21},
+  {l:"2025-11-30",v:18},
+  {l:"2025-12-01",v:113},
+  {l:"2025-12-02",v:153},
+  {l:"2025-12-03",v:138},
+  {l:"2025-12-04",v:134},
+  {l:"2025-12-05",v:127},
+  {l:"2025-12-06",v:138},
+  {l:"2025-12-07",v:176},
+  {l:"2025-12-08",v:161},
+  {l:"2025-12-09",v:164},
+  {l:"2025-12-10",v:160},
+  {l:"2025-12-11",v:145},
+  {l:"2025-12-12",v:158},
+  {l:"2025-12-13",v:146},
+  {l:"2025-12-14",v:164},
+  {l:"2025-12-15",v:136},
+  {l:"2025-12-16",v:126},
+  {l:"2025-12-17",v:143},
+  {l:"2025-12-18",v:144},
+  {l:"2025-12-19",v:128},
+  {l:"2025-12-20",v:129},
+  {l:"2025-12-21",v:156},
+  {l:"2025-12-22",v:147},
+  {l:"2025-12-23",v:126},
+  {l:"2025-12-24",v:131},
+  {l:"2025-12-25",v:144},
+  {l:"2025-12-26",v:186},
+  {l:"2025-12-27",v:115},
+  {l:"2025-12-28",v:136},
+  {l:"2025-12-29",v:158},
+  {l:"2025-12-30",v:128},
+  {l:"2025-12-31",v:149},
+  {l:"2026-01-01",v:155},
+  {l:"2026-01-02",v:107},
+  {l:"2026-01-03",v:148},
+  {l:"2026-01-04",v:129},
+  {l:"2026-01-05",v:142},
+  {l:"2026-01-06",v:122},
+  {l:"2026-01-07",v:148},
+  {l:"2026-01-08",v:134},
+  {l:"2026-01-09",v:139},
+  {l:"2026-01-10",v:135},
+  {l:"2026-01-11",v:159},
+  {l:"2026-01-12",v:147},
+  {l:"2026-01-13",v:130},
+  {l:"2026-01-14",v:129},
+  {l:"2026-01-15",v:150},
+  {l:"2026-01-16",v:134},
+  {l:"2026-01-17",v:132},
+  {l:"2026-01-18",v:127},
+  {l:"2026-01-19",v:133},
+  {l:"2026-01-20",v:139},
+  {l:"2026-01-21",v:131},
+  {l:"2026-01-22",v:153},
+  {l:"2026-01-23",v:127},
+  {l:"2026-01-24",v:145},
+  {l:"2026-01-25",v:138},
+  {l:"2026-01-26",v:149},
+  {l:"2026-01-27",v:150},
+  {l:"2026-01-28",v:136},
+  {l:"2026-01-29",v:133},
+  {l:"2026-01-30",v:130},
+  {l:"2026-01-31",v:148},
+  {l:"2026-02-01",v:146},
+  {l:"2026-02-02",v:137},
+  {l:"2026-02-03",v:150},
+  {l:"2026-02-04",v:150},
+  {l:"2026-02-05",v:144},
+  {l:"2026-02-06",v:162},
+  {l:"2026-02-07",v:169},
+  {l:"2026-02-08",v:140},
+  {l:"2026-02-09",v:156},
+  {l:"2026-02-10",v:150},
+  {l:"2026-02-11",v:145},
+  {l:"2026-02-12",v:142},
+  {l:"2026-02-13",v:147},
+  {l:"2026-02-14",v:147},
+  {l:"2026-02-15",v:150},
+  {l:"2026-02-16",v:131},
+  {l:"2026-02-17",v:148},
+  {l:"2026-02-18",v:137},
+  {l:"2026-02-19",v:146},
+  {l:"2026-02-20",v:137},
+  {l:"2026-02-21",v:141},
+  {l:"2026-02-22",v:146},
+  {l:"2026-02-23",v:151},
+  {l:"2026-02-24",v:162},
+  {l:"2026-02-25",v:139},
+  {l:"2026-02-26",v:127},
+  {l:"2026-02-27",v:140},
+  {l:"2026-02-28",v:146},
+  {l:"2026-03-01",v:153},
+  {l:"2026-03-02",v:134},
+  {l:"2026-03-03",v:145},
+  {l:"2026-03-04",v:135},
+  {l:"2026-03-05",v:131},
+  {l:"2026-03-06",v:121},
+  {l:"2026-03-07",v:141},
+  {l:"2026-03-08",v:147},
+  {l:"2026-03-09",v:132},
+  {l:"2026-03-10",v:150},
+  {l:"2026-03-11",v:135},
+  {l:"2026-03-12",v:133},
+  {l:"2026-03-13",v:145},
+  {l:"2026-03-14",v:133},
+  {l:"2026-03-15",v:140},
+  {l:"2026-03-16",v:147},
+  {l:"2026-03-17",v:151},
+  {l:"2026-03-18",v:141},
+  {l:"2026-03-19",v:157},
+  {l:"2026-03-20",v:138},
+  {l:"2026-03-21",v:156},
+  {l:"2026-03-22",v:138},
+  {l:"2026-03-23",v:143},
+  {l:"2026-03-24",v:158},
+  {l:"2026-03-25",v:117},
+  {l:"2026-03-26",v:142},
+  {l:"2026-03-27",v:141},
+  {l:"2026-03-28",v:144},
+  {l:"2026-03-29",v:160},
+  {l:"2026-03-30",v:134},
+  {l:"2026-03-31",v:126},
+  {l:"2026-04-01",v:129},
+  {l:"2026-04-02",v:124},
+  {l:"2026-04-03",v:139},
+  {l:"2026-04-04",v:143},
+  {l:"2026-04-05",v:141},
+  {l:"2026-04-06",v:143},
+  {l:"2026-04-07",v:137},
+  {l:"2026-04-08",v:149},
+  {l:"2026-04-09",v:147},
+  {l:"2026-04-10",v:169},
+  {l:"2026-04-11",v:142},
+  {l:"2026-04-12",v:157},
+  {l:"2026-04-13",v:147},
+  {l:"2026-04-14",v:116},
+  {l:"2026-04-15",v:147},
+  {l:"2026-04-16",v:122},
+  {l:"2026-04-17",v:144},
+  {l:"2026-04-18",v:139},
+  {l:"2026-04-19",v:121},
+  {l:"2026-04-20",v:131},
+  {l:"2026-04-21",v:130},
+  {l:"2026-04-22",v:157},
+  {l:"2026-04-23",v:138},
+  {l:"2026-04-24",v:137},
+  {l:"2026-04-25",v:146},
+  {l:"2026-04-26",v:133},
+  {l:"2026-04-27",v:150},
+  {l:"2026-04-28",v:134},
+  {l:"2026-04-29",v:138},
+  {l:"2026-04-30",v:133},
+  {l:"2026-05-01",v:105},
+  {l:"2026-05-02",v:111},
+  {l:"2026-05-03",v:128},
+  {l:"2026-05-04",v:119},
+  {l:"2026-05-05",v:121},
+  {l:"2026-05-06",v:118},
+  {l:"2026-05-07",v:110},
+  {l:"2026-05-08",v:125},
+  {l:"2026-05-09",v:115},
+  {l:"2026-05-10",v:106},
+  {l:"2026-05-11",v:124},
+  {l:"2026-05-12",v:126},
+  {l:"2026-05-13",v:134},
+  {l:"2026-05-14",v:127},
+  {l:"2026-05-15",v:103},
+  {l:"2026-05-16",v:117},
+  {l:"2026-05-17",v:128},
+  {l:"2026-05-18",v:123},
+  {l:"2026-05-19",v:110}
+];
+
+const FRIENDS = [
+  {id:1088,country:"France",friend:746,total:6043,bringers:610,converted:139,cr:22.8,tiers:{Diamond:14,Gold:45,Platinum:9,Silver:67,Limited:4}},
+  {id:2004,country:"Germany",friend:693,total:5800,bringers:691,converted:199,cr:28.8,tiers:{Diamond:19,Gold:46,Platinum:21,Silver:94,Limited:19}},
+  {id:623,country:"Netherlands",friend:688,total:5292,bringers:566,converted:113,cr:20.0,tiers:{Diamond:16,Gold:34,Platinum:13,Silver:48,Limited:2}},
+  {id:737,country:"Belgium",friend:617,total:5007,bringers:549,converted:146,cr:26.6,tiers:{Diamond:9,Gold:32,Platinum:21,Silver:62,Limited:22}},
+  {id:1025,country:"Belgium",friend:594,total:4892,bringers:519,converted:150,cr:28.9,tiers:{Diamond:15,Gold:43,Platinum:13,Silver:58,Limited:21}},
+  {id:1303,country:"France",friend:552,total:4143,bringers:427,converted:99,cr:23.2,tiers:{Diamond:16,Gold:33,Platinum:9,Silver:40,Limited:1}},
+  {id:2007,country:"Spain",friend:548,total:4600,bringers:546,converted:153,cr:28.0,tiers:{Diamond:15,Gold:40,Platinum:19,Silver:67,Limited:12}},
+  {id:2003,country:"Germany",friend:538,total:4200,bringers:537,converted:143,cr:26.6,tiers:{Diamond:9,Gold:49,Platinum:13,Silver:63,Limited:9}},
+  {id:392,country:"Netherlands",friend:505,total:3461,bringers:332,converted:93,cr:28.0,tiers:{Diamond:12,Gold:38,Platinum:10,Silver:32,Limited:1}},
+  {id:463,country:"Netherlands",friend:503,total:3969,bringers:386,converted:139,cr:36.0,tiers:{Diamond:14,Gold:45,Platinum:9,Silver:66,Limited:5}},
+  {id:471,country:"Belgium",friend:495,total:4053,bringers:445,converted:98,cr:22.0,tiers:{Diamond:5,Gold:26,Platinum:13,Silver:35,Limited:19}},
+  {id:243,country:"Netherlands",friend:448,total:3625,bringers:359,converted:85,cr:23.7,tiers:{Diamond:6,Gold:22,Platinum:14,Silver:42,Limited:1}},
+  {id:2009,country:"Spain",friend:422,total:3700,bringers:421,converted:133,cr:31.6,tiers:{Diamond:10,Gold:39,Platinum:17,Silver:60,Limited:7}},
+  {id:2005,country:"Germany",friend:370,total:3100,bringers:370,converted:120,cr:32.4,tiers:{Diamond:10,Gold:30,Platinum:18,Silver:49,Limited:13}},
+  {id:1650,country:"Belgium",friend:369,total:3205,bringers:354,converted:95,cr:26.8,tiers:{Diamond:6,Gold:24,Platinum:11,Silver:37,Limited:17}}
+];
+const AVG_GUEST_CR = 29.4;
+
+const BUBBLE = [
+  {id:833,country:"Netherlands",visits:3562,score:73.6,reviews:1759},
+  {id:1088,country:"France",visits:6043,score:80.1,reviews:1111},
+  {id:1084,country:"Netherlands",visits:2242,score:74.6,reviews:1076},
+  {id:623,country:"Netherlands",visits:5292,score:79.7,reviews:1043},
+  {id:737,country:"Belgium",visits:5007,score:83.1,reviews:1028},
+  {id:1303,country:"France",visits:4143,score:78.0,reviews:987},
+  {id:2004,country:"Germany",visits:5800,score:84.4,reviews:920},
+  {id:1025,country:"Belgium",visits:4892,score:81.2,reviews:897},
+  {id:1645,country:"Belgium",visits:1859,score:89.4,reviews:873},
+  {id:496,country:"Belgium",visits:2587,score:89.1,reviews:841},
+  {id:2007,country:"Spain",visits:4600,score:86.6,reviews:840},
+  {id:471,country:"Belgium",visits:4053,score:85.4,reviews:823},
+  {id:1650,country:"Belgium",visits:3205,score:88.0,reviews:809},
+  {id:2003,country:"Germany",visits:4200,score:82.0,reviews:780},
+  {id:392,country:"Netherlands",visits:3461,score:83.5,reviews:726},
+  {id:540,country:"Netherlands",visits:3035,score:81.6,reviews:722},
+  {id:2009,country:"Spain",visits:3700,score:86.3,reviews:710},
+  {id:463,country:"Netherlands",visits:3969,score:82.2,reviews:699},
+  {id:2005,country:"Germany",visits:3100,score:78.8,reviews:650},
+  {id:1721,country:"Belgium",visits:2214,score:86.7,reviews:632},
+  {id:1522,country:"Netherlands",visits:3060,score:85.4,reviews:619},
+  {id:2001,country:"Germany",visits:502,score:79.1,reviews:612},
+  {id:1342,country:"Belgium",visits:1344,score:90.7,reviews:595},
+  {id:243,country:"Netherlands",visits:3625,score:82.7,reviews:561},
+  {id:2002,country:"Spain",visits:564,score:83.3,reviews:541},
+  {id:1460,country:"Belgium",visits:2183,score:88.3,reviews:535},
+  {id:2008,country:"Spain",visits:2900,score:77.6,reviews:520},
+  {id:2006,country:"Germany",visits:1800,score:84.8,reviews:310},
+  {id:897,country:"Belgium",visits:3116,score:84.7,reviews:211}
+];
+
+const NM = {
+  months:["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  Diamond:[213,189,143,168,151,134,212,209,326,260,199,142],
+  Gold:[837,824,689,684,713,627,752,769,1470,1088,871,755],
+  Platinum:[362,448,366,393,377,356,334,362,780,584,539,511],
+  Silver:[1276,1277,1134,1196,1054,1035,1279,1254,2258,1774,1435,1206],
+  Limited:[741,447,353,371,392,298,416,513,898,717,641,391],
+  mom:[null,-7.1,-15.7,4.7,-4.4,-8.8,22.2,3.8,84.5,-22.8,-16.7,-18.5],
+  ret:[18.5,14.5,14.6,15.5,16.3,14.2,17.0,18.2,21.8,21.4,20.8,19.0],
+};
+
+const MODAL_ROWS = [
+  {year:"2023",visits:22502,active:34570,net:2297,joiners:25718,leavers:23421,friend:2692,children:[
+    {q:"Q1",visits:4153,active:31788,net:1791,joiners:6587,leavers:4796,friend:487},
+    {q:"Q2",visits:5136,active:32671,net:708,joiners:5412,leavers:4704,friend:593},
+    {q:"Q3",visits:6536,active:33787,net:173,joiners:6434,leavers:6261,friend:833},
+    {q:"Q4",visits:6473,active:34570,net:-375,joiners:7285,leavers:7660,friend:754}
+  ]},
+  {year:"2024",visits:30945,active:43843,net:8315,joiners:40193,leavers:31878,friend:3844,children:[
+    {q:"Q1",visits:7039,active:35674,net:1959,joiners:9299,leavers:7340,friend:889},
+    {q:"Q2",visits:7338,active:36817,net:937,joiners:7949,leavers:7012,friend:953},
+    {q:"Q3",visits:7890,active:41456,net:3023,joiners:11832,leavers:8809,friend:955},
+    {q:"Q4",visits:8448,active:43843,net:2396,joiners:11113,leavers:8717,friend:1022}
+  ]},
+  {year:"2025",visits:23121,active:52223,net:6775,joiners:47400,leavers:40625,friend:2597,children:[
+    {q:"Q1",visits:8280,active:48405,net:3256,joiners:13044,leavers:9788,friend:984},
+    {q:"Q2",visits:5202,active:48808,net:440,joiners:10472,leavers:10032,friend:552},
+    {q:"Q3",visits:3272,active:52251,net:2498,joiners:12841,leavers:10343,friend:325},
+    {q:"Q4",visits:6221,active:52223,net:581,joiners:11043,leavers:10462,friend:723}
+  ]}
+];
+
+// ── Chart defaults ─────────────────────────────────────────────────────────────
+Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#6b7a84';
+Chart.defaults.plugins.legend.display = false;
+Chart.defaults.plugins.tooltip.enabled = false;
+const GRID = {color:'#d0dce4',drawBorder:false};
+
+// ── Tooltip helpers ────────────────────────────────────────────────────────────
+const TT = document.getElementById('tt');
+function showTT(html, e){ TT.innerHTML=html; TT.style.display='block'; posTT(e); }
+function hideTT(){ TT.style.display='none'; }
+function posTT(e){
+  let x=e.clientX+14, y=e.clientY-10;
+  if(x+TT.offsetWidth  > window.innerWidth-8)  x = e.clientX-TT.offsetWidth-14;
+  if(y+TT.offsetHeight > window.innerHeight-8) y = window.innerHeight-TT.offsetHeight-8;
+  TT.style.left=x+'px'; TT.style.top=y+'px';
+}
+// Score bars for review tooltip (dimensions in descending value order)
+function scoreBarsTT(d){
+  return [['Hygiene',d.hyg],['Equipment',d.equip],['Atmosphere',d.atm],['Staff',d.staff],['Crowdedness',d.crowd]]
+    .map(([k,v])=>`<div class="tt-bar-row">
+      <span class="tt-bar-lbl">${k}</span>
+      <div class="tt-bar-track"><div class="tt-bar-fill" style="width:${v}%;background:${cfBg(v,false)}"></div></div>
+      <span class="tt-bar-val" style="color:${cfFg(v,false)}">${v}</span>
+    </div>`).join('');
+}
+// Tier bars for membership tooltip
+function tierBarsTT(tiers){
+  const mx = Math.max(...Object.values(tiers).filter(v=>v!=null&&v>0));
+  const TC = {Diamond:'#F0C97A',Gold:'#8FA7D4',Platinum:'#C9A8D4',Silver:'#8FAEAB',Limited:'#D4C4A8'};
+  return Object.entries(tiers).map(([t,v])=>`<div class="tt-tier-row">
+    <span class="tt-tier-lbl">${t}</span>
+    <div class="tt-tier-track"><div class="tt-tier-fill" style="width:${v!=null?v/mx*100:0}%;background:${TC[t]}"></div></div>
+    <span class="tt-tier-val">${v!=null?v:'—'}</span>
+  </div>`).join('');
+}
+
+// ── Active filters ─────────────────────────────────────────────────────────────
+let fCountry='All', fClub='All', fMem='All';
+
+function filteredReviews(){
+  return REVIEWS.filter(d =>
+    (fCountry==='All'||d.country===fCountry) &&
+    (fClub==='All'||String(d.id)===fClub)
+  );
+}
+function filteredFriends(){
+  return FRIENDS.filter(d =>
+    (fCountry==='All'||d.country===fCountry) &&
+    (fClub==='All'||String(d.id)===fClub)
+  );
+}
+function filteredBubble(){
+  return BUBBLE.filter(d =>
+    (fCountry==='All'||d.country===fCountry) &&
+    (fClub==='All'||String(d.id)===fClub)
+  );
+}
+
+function toggleFilters(){
+  document.getElementById('filtersPanel').classList.toggle('open');
+}
+function applyFilters(){
+  fCountry=document.getElementById('f-country').value;
+  fClub   =document.getElementById('f-club').value;
+  fMem    =document.getElementById('f-mem').value;
+  const fr=filteredReviews();
+  buildReviewChart(fr);
+  buildScoresTable(fr);
+  buildFriendChart(filteredFriends());
+  buildBubbleChart(filteredBubble());
+  buildNewMemsChart(fMem);
+  document.getElementById('filtersPanel').classList.remove('open');
+}
+function resetAllFilters(){
+  document.getElementById('f-country').value='All';
+  document.getElementById('f-club').value='All';
+  document.getElementById('f-mem').value='All';
+  applyFilters();
+}
+
+// Populate Club filter dropdown
+(function(){
+  const sel=document.getElementById('f-club');
+  [...new Set(REVIEWS.map(d=>d.id))].sort((a,b)=>a-b).forEach(id=>{
+    const o=document.createElement('option'); o.value=id; o.textContent=id; sel.appendChild(o);
+  });
+})();
+
+// ── Build Scores Table — CF colours match Power BI DAX exactly ────────────────
+// Overall: <78=red, <85=amber, ≥85=green
+// Dimensions: <75=red, <85=amber, ≥85=green
+// Weakest chip: "DimName · score" format, coloured by dim CF colours
+let sortCol=1, sortDir=-1;  // default: Reviews descending, matching Power BI
+function buildScoresTable(data){
+  const keys=['id','reviews','overall',null,'atm','crowd','equip','hyg','staff'];
+  const sorted=[...data].sort((a,b)=>{
+    const ka=keys[sortCol], kb=keys[sortCol];
+    if(!ka) return 0;
+    return (a[ka]-b[ka])*sortDir;
+  });
+  const tb = document.getElementById('scoresBody');
+  tb.innerHTML='';
+  sorted.forEach(d=>{
+    const tr=document.createElement('tr');
+    // Weakest chip: dimension name only (matching Power BI) — coloured with dim CF thresholds
+    const wbg=cfBg(d.wval,false), wfg=cfFg(d.wval,false);
+    const weakestLabel = `${d.weakest}`;
+    // Individual dimension cells
+    const scoreCells=[['atm',false],['crowd',false],['equip',false],['hyg',false],['staff',false]].map(([k])=>{
+      const v=d[k];
+      return `<td><span class="cell-heat" style="background:${cfBg(v,false)};color:${cfFg(v,false)}">${v}</span></td>`;
+    }).join('');
+    const obg=cfBg(d.overall,true), ofg=cfFg(d.overall,true);
+    tr.innerHTML=`<td><b>${d.id}</b></td>
+      <td>${fmtDE(d.reviews)}</td>
+      <td><span class="cell-heat" style="background:${obg};color:${ofg}">${d.overall}</span></td>
+      <td><span class="weakest-chip" style="background:${wbg};color:${wfg}">${weakestLabel}</span></td>
+      ${scoreCells}`;
+    tr.addEventListener('mouseenter',e=>showTT(`
+      <div class="tt-title"><span>Club ${d.id}</span><span>${cCode(d.country)}</span></div>
+      <div class="tt-row"><span>Reviews</span><b>${fmtDE(d.reviews)}</b></div>
+      <div class="tt-row"><span>Overall Score</span><b>${d.overall}</b></div>
+      <div class="tt-row"><span>Weakest Area</span><b>${d.weakest} · ${d.wval}</b></div>
+      <hr class="tt-sep">${scoreBarsTT(d)}`,e));
+    tr.addEventListener('mousemove',posTT);
+    tr.addEventListener('mouseleave',hideTT);
+    tb.appendChild(tr);
+  });
+}
+function sortTable(col){
+  sortDir = (sortCol===col) ? -sortDir : 1;
+  sortCol = col;
+  buildScoresTable(filteredReviews());
+}
+
+// ── PAGE 1: Club Review chart ──────────────────────────────────────────────────
+function buildReviewChart(data){
+  const top10=[...data].sort((a,b)=>b.reviews-a.reviews).slice(0,10);
+  // Scale avg score to same axis as reviews so it renders as a short extension
+  // We'll normalise: reviews fills most of bar, score appended proportionally
+  const maxR=Math.max(...top10.map(d=>d.reviews));
+  // score (0-100) mapped to ~15% of maxR so it shows as a visible stub
+  const scoreScale = maxR * 0.15 / 100;
+
+  const labelPlugin={id:'rl',afterDraw(chart){
+    const {ctx:c,scales:{x,y}}=chart;
+    top10.forEach((d,i)=>{
+      const yc = y.getPixelForValue(i);
+      // place chip at end of the reviews segment
+      const xEnd = x.getPixelForValue(d.reviews);
+      const label = `${fmtDE(d.overall,1)} score · ${cCode(d.country)}`;
+      const pad = 6;
+      c.save();
+      c.font = 'bold 10px Segoe UI, system-ui, sans-serif';
+      const tw = c.measureText(label).width;
+      const bw = tw + pad*2;
+      const bh = 18;
+      const bx = xEnd - bw - 4;
+      const by = yc - bh/2;
+      c.fillStyle = 'rgba(255,255,255,0.88)';
+      c.beginPath();
+      if(c.roundRect) c.roundRect(bx,by,bw,bh,4); else c.rect(bx,by,bw,bh);
+      c.fill();
+      c.fillStyle = '#2e3338';
+      c.textBaseline = 'middle';
+      c.fillText(label, bx+pad, by+bh/2);
+      c.restore();
+    });
+  }};
+
+  const ctx=document.getElementById('clubReviewChart').getContext('2d');
+  if(chReview){ chReview.destroy(); }
+  chReview = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels: top10.map(d=>String(d.id)),
+      datasets:[
+        {
+          label:'Total Reviews',
+          data:top10.map(d=>d.reviews),
+          backgroundColor:'rgba(46,78,74,0.80)',
+          borderWidth:0,
+          borderRadius:0,
+          stack:'s',
+        },
+        {
+          label:'Average Score',
+          data:top10.map(d=>d.overall * scoreScale),
+          backgroundColor:'rgba(143,167,212,0.75)',
+          borderWidth:0,
+          borderRadius:2,
+          stack:'s',
+        }
+      ]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      layout:{padding:{right:0}},
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        y:{grid:{display:false},ticks:{font:{size:10},color:'#2e3338'},stacked:true},
+        x:{grid:GRID,min:0,stacked:true,ticks:{font:{size:10}}},
+      },
+      onHover:(evt,els,chart)=>{
+        const pos=Chart.helpers.getRelativePosition(evt,chart);
+        const idx=Math.round(chart.scales.y.getValueForPixel(pos.y));
+        if(idx>=0&&idx<top10.length){
+          const d=top10[idx];
+          showTT(`<div class="tt-title"><span>Club ${d.id}</span><span>${cCode(d.country)}</span></div>
+            <div class="tt-row"><span>Total Reviews</span><b>${fmtDE(d.reviews)}</b></div>
+            <div class="tt-row"><span>Overall Score</span><b>${fmtDE(d.overall,1)}</b></div>
+            <div class="tt-row"><span>Weakest Area</span><b>${d.weakest} · ${d.wval}</b></div>
+            <hr class="tt-sep">${scoreBarsTT(d)}`,evt.native);
+        } else hideTT();
+      },
+    },
+    plugins:[labelPlugin]
+  });
+  document.getElementById('clubReviewChart').onmouseleave=hideTT;
+}
+
+// ── PAGE 1: Visits over time (daily, matching Power BI) ───────────────────────
+function buildVisitsChart(){
+  const vals = MV.map(d=>d.v);
+  const labels = MV.map(d=>d.l);
+
+  // x-axis: show only month labels at first-of-month boundaries
+  const tickLabels = labels.map(l=>{
+    const dt = new Date(l);
+    return dt.getDate()===1 ? dt.toLocaleDateString('en-GB',{month:'short',year:'numeric'}) : '';
+  });
+
+  // Forecast: one extra point extending the trend from the last two days
+  const lastV = vals[vals.length-1];
+  const prevV = vals[vals.length-2] ?? lastV;
+  const forecastLabels = [...labels, ''];
+  const mainData  = [...vals, null];
+  const fcastData = vals.map(()=>null);
+  fcastData[vals.length-1] = lastV;
+  fcastData.push(Math.round(lastV + (lastV - prevV)));
+
+  // Dotted linear trend line (least-squares over all historical data)
+  const n = vals.length;
+  const sumX = vals.reduce((_,__,i)=>_+i, 0);
+  const sumY = vals.reduce((a,v)=>a+v, 0);
+  const sumXY = vals.reduce((a,v,i)=>a+i*v, 0);
+  const sumX2 = vals.reduce((a,_,i)=>a+i*i, 0);
+  const slope = (n*sumXY - sumX*sumY) / (n*sumX2 - sumX*sumX);
+  const intercept = (sumY - slope*sumX) / n;
+  const trendData = [...vals.map((_,i)=>Math.round(intercept + slope*i)),
+                     Math.round(intercept + slope*n)];
+
+  const ctx=document.getElementById('visitsChart').getContext('2d');
+  if(chVisits) chVisits.destroy();
+  chVisits=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels: forecastLabels,
+      datasets:[
+        // Main line with light fill beneath
+        {data:mainData,borderColor:'#446F6B',backgroundColor:'rgba(68,111,107,0.08)',
+         fill:true,tension:0.3,pointRadius:0,pointHoverRadius:4,borderWidth:1.8,spanGaps:false},
+        // Forecast dashed extension
+        {data:fcastData,borderColor:'rgba(68,111,107,0.45)',borderDash:[6,4],
+         fill:false,tension:0,pointRadius:0,borderWidth:1.3,spanGaps:true},
+        // Dotted trend line
+        {data:trendData,borderColor:'rgba(0,0,0,0.30)',borderDash:[3,3],
+         fill:false,tension:0,pointRadius:0,borderWidth:1.2,spanGaps:true},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{
+          font:{size:10},maxRotation:0,autoSkip:false,
+          callback:(val,i)=>tickLabels[i]||null
+        }},
+        y:{grid:GRID,min:0,ticks:{font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v}}
+      },
+      onHover:(evt,els)=>{
+        if(!els.length){hideTT();return;}
+        const i=els[0].index;
+        if(i>=MV.length){hideTT();return;}
+        const d=MV[i];
+        const dt=new Date(d.l);
+        const label=dt.toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'});
+        showTT(`<div class="tt-title">${label}</div>
+          <div class="tt-row"><span>Visits</span><b>${fmtDE(d.v)}</b></div>`,evt.native);
+      }
+    }
+  });
+  document.getElementById('visitsChart').onmouseleave=hideTT;
+}
+
+// ── PAGE 2: Friend Visits chart ────────────────────────────────────────────────
+// Benchmark line = AvgGuestCRAcrossClubs = AVERAGEX(clubs, GuestConverted/Bringers) = 29.4%
+// The line is drawn at the x-pixel corresponding to that % of the max friend visit count
+function buildFriendChart(data){
+  const sorted=[...data].sort((a,b)=>a.friend-b.friend);
+  const maxF=Math.max(...sorted.map(d=>d.friend));
+
+  const friendPlugin={id:'fb',afterDraw(chart){
+    const {ctx:c,scales:{x,y}}=chart;
+
+    // Shade left of benchmark = clubs failing to hit avg conversion rate
+    const benchX = x.getPixelForValue(AVG_GUEST_CR/100*maxF);
+    c.save();
+    c.fillStyle='rgba(0,0,0,0.10)';
+    c.fillRect(x.left, y.top, benchX - x.left, y.bottom - y.top);
+
+    // Dashed benchmark line
+    c.beginPath();c.setLineDash([5,4]);c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=1.2;
+    c.moveTo(benchX,y.top);c.lineTo(benchX,y.bottom);c.stroke();
+    c.setLineDash([]);
+
+    // Label between the top two bars, always visible
+    const yBar0 = y.getPixelForValue(0);
+    const yBar1 = y.getPixelForValue(1);
+    const labelY = (yBar0 + yBar1) / 2;
+    c.font='10px Segoe UI,system-ui,sans-serif';c.fillStyle='#6b7a84';c.textAlign='left';
+    c.fillText('Average Guest Conversion Rate: '+AVG_GUEST_CR+'%', benchX+4, labelY);
+    c.restore();
+
+    // Chip label inside each bar
+    sorted.forEach((d,i)=>{
+      const yc = y.getPixelForValue(i);
+      const xEnd = x.getPixelForValue(d.friend);
+      const label = `${fmtDE(d.friend)} visits with friend · ${cCode(d.country)}`;
+      const pad = 6;
+      c.save();
+      c.font = 'bold 10px Segoe UI, system-ui, sans-serif';
+      const tw = c.measureText(label).width;
+      const bw = tw + pad*2;
+      const bh = 18;
+      const bx = xEnd - bw - 4;
+      const by = yc - bh/2;
+      c.fillStyle = 'rgba(255,255,255,0.88)';
+      c.beginPath();
+      if(c.roundRect) c.roundRect(bx,by,bw,bh,4); else c.rect(bx,by,bw,bh);
+      c.fill();
+      c.fillStyle = '#2e3338';
+      c.textBaseline = 'middle';
+      c.fillText(label, bx+pad, by+bh/2);
+      c.restore();
+    });
+  }};
+
+  const ctx=document.getElementById('friendChart').getContext('2d');
+  if(chFriend) chFriend.destroy();
+  chFriend=new Chart(ctx,{
+    type:'bar',
+    data:{labels:sorted.map(d=>String(d.id)),datasets:[{
+      data:sorted.map(d=>d.friend),
+      backgroundColor:sorted.map(d=>cC(d.country)),
+      borderRadius:3,borderSkipped:false,
+    }]},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:16}},
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        y:{grid:{display:false},border:{display:false},ticks:{font:{size:10},color:'#2e3338'}},
+        x:{grid:GRID,border:{display:false},min:0,max:maxF*1.12,ticks:{display:false}}
+      },
+      onHover:(evt,els)=>{
+        if(!els.length){hideTT();return;}
+        const d=sorted[els[0].index];
+        const pct=(d.friend/d.total*100).toFixed(0);
+        showTT(`<div class="tt-title"><span><b>Club ID</b></span><b>${d.id}</b></div>
+          <div class="tt-row"><span>Friends' Visits over Total Visits</span><b>${pct}%</b></div>
+          <div class="tt-row"><span>Bringers Per Club</span><b>${fmtDE(d.bringers)}</b></div>
+          <div class="tt-row"><span>Guests Converted to Members</span><b>${d.converted!=null?fmtDE(d.converted):'—'}</b></div>
+          <div class="tt-row"><span>Guests Conversion Rate</span><b>${d.cr!=null?d.cr.toFixed(0)+'%':'—'}</b></div>
+          <hr class="tt-sep">${d.tiers?tierBarsTT(d.tiers):''}`,evt.native);
+      }
+    },
+    plugins:[friendPlugin]
+  });
+  document.getElementById('friendChart').onmouseleave=hideTT;
+}
+
+// ── PAGE 2: Bubble chart ───────────────────────────────────────────────────────
+// x = TotalVisits (REMOVEFILTERS dim_calendar = all visits, no date filter)
+// y = AvgOverallScore (0-100)
+// r = ReviewCount (bubble size)
+// Benchmark line at score 83
+function buildBubbleChart(data){
+  const BENCH=83;
+  const maxRev=Math.max(...data.map(d=>d.reviews));
+  const countries=['Belgium','France','Germany','Netherlands','Spain'];
+  const datasets=countries.map(c=>({
+    label:c,
+    data:data.filter(d=>d.country===c).map(d=>({
+      x:d.visits, y:d.score,
+      r:Math.sqrt(d.reviews/maxRev)*30+5,
+      id:d.id, reviews:d.reviews
+    })),
+    backgroundColor:cC(c)+'bb',borderColor:cC(c),borderWidth:1.5,
+  }));
+  const benchPlugin={id:'bb',afterDraw(chart){
+    const {ctx:c,scales:{x,y}}=chart;
+    const yPx=y.getPixelForValue(BENCH);
+    c.save();c.beginPath();c.setLineDash([6,4]);c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=1.2;
+    c.moveTo(x.left,yPx);c.lineTo(x.right,yPx);c.stroke();
+    c.setLineDash([]);c.font='10px Segoe UI,system-ui,sans-serif';c.fillStyle='#6b7a84';
+    c.fillText('Average Score Benchmark: '+BENCH,x.left+4,yPx-4);c.restore();
+  }};
+  const ctx=document.getElementById('bubbleChart').getContext('2d');
+  if(chBubble) chBubble.destroy();
+  chBubble=new Chart(ctx,{
+    type:'bubble',data:{datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        x:{grid:GRID,border:{display:false},min:0,ticks:{stepSize:1000,callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v}},
+        y:{grid:GRID,border:{display:false},min:65,max:100,ticks:{display:false}}
+      },
+      onHover:(evt,els)=>{
+        if(!els.length){hideTT();return;}
+        const el=els[0],ds=chBubble.data.datasets[el.datasetIndex],pt=ds.data[el.index];
+        showTT(`<div class="tt-title"><span>Club ${pt.id}</span><span>${cCode(ds.label)}</span></div>
+          <div class="tt-row"><span>Country</span><b>${ds.label}</b></div>
+          <div class="tt-row"><span>Avg Overall Score</span><b>${pt.y}</b></div>
+          <div class="tt-row"><span>Total Visits</span><b>${fmtDE(pt.x)}</b></div>
+          <div class="tt-row"><span>Total Reviews</span><b>${fmtDE(pt.reviews)}</b></div>`,evt.native);
+      }
+    },
+    plugins:[benchPlugin]
+  });
+  document.getElementById('bubbleChart').onmouseleave=hideTT;
+}
+
+// ── PAGE 2: New Memberships chart ──────────────────────────────────────────────
+// Stacked bar per tier, 2024 monthly data
+// Tooltip: MoM Change % (FORMAT "+0%;-0%;0%") + RetentionRate (EndDate=2099-12-31 / total)
+// Tier colours match Power BI model: Diamond=#F0C97A, Gold=#8FA7D4, Platinum=#C9A8D4, Silver=#8FAEAB (teal-light), Limited=#D4C4A8
+function buildNewMemsChart(shownTiers){
+  const TC={Diamond:'#F0C97A',Gold:'#8FA7D4',Platinum:'#C9A8D4',Silver:'#8FAEAB',Limited:'#D4C4A8'};
+  const all=['Diamond','Gold','Platinum','Silver','Limited'];
+  const datasets=all.map(t=>({
+    label:t,data:NM[t],backgroundColor:TC[t],borderRadius:2,stack:'s',
+    hidden:shownTiers!=='All'&&t!==shownTiers,
+  }));
+  const ctx=document.getElementById('newMemsChart').getContext('2d');
+  if(chNewMems) chNewMems.destroy();
+  chNewMems=new Chart(ctx,{
+    type:'bar',data:{labels:NM.months,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        x:{grid:{display:false},border:{display:false},stacked:true},
+        y:{grid:GRID,border:{display:false},stacked:true,ticks:{display:false}}
+      },
+      onHover:(evt,els)=>{
+        if(!els.length){hideTT();return;}
+        const i=els[0].index;
+        const totals={
+          Diamond:NM.Diamond[i],Gold:NM.Gold[i],Platinum:NM.Platinum[i],
+          Silver:NM.Silver[i],Limited:NM.Limited[i]
+        };
+        const total=Object.values(totals).reduce((a,b)=>a+b,0);
+        const mom=NM.mom[i];
+        const ret=NM.ret[i];
+        const momStr = mom==null ? '—'
+          : (mom>0 ? '+'+mom.toFixed(0)+'%' : mom<0 ? mom.toFixed(0)+'%' : '0%');
+        const fullMonth=['January','February','March','April','May','June','July','August','September','October','November','December'][i];
+        showTT(`<div class="tt-title"><span>New Memberships</span><span>${fullMonth}</span></div>
+          <div class="tt-row"><span>Total Joiners</span><b>${fmtDE(total)}</b></div>
+          <div class="tt-row"><span>MoM Change</span><b>${momStr}</b></div>
+          <div class="tt-row"><span>Retention Rate</span><b>${ret.toFixed(1)}%</b></div>
+          <hr class="tt-sep">${tierBarsTT(totals)}`,evt.native);
+      }
+    }
+  });
+  document.getElementById('newMemsChart').onmouseleave=hideTT;
+}
+
+// ── Initial render ─────────────────────────────────────────────────────────────
+buildReviewChart(REVIEWS);
+buildScoresTable(REVIEWS);
+buildVisitsChart();
+buildFriendChart(FRIENDS);
+buildBubbleChart(BUBBLE);
+buildNewMemsChart('All');
+
+
+// ── Back button ────────────────────────────────────────────────────────────────
+function handleBack(){
+  if(currentPage===1){
+    window.location.href='/';
+  } else {
+    showPage(1);
+  }
+}
+
+// ── Page switcher ────────────────────────────────────────────────────────────────────────────────────────────
+let currentPage=1;
+function showPage(n){
+  currentPage=n;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.page-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page'+n).classList.add('active');
+  document.getElementById('tab'+n).classList.add('active');
+  document.getElementById('navTitle').textContent=n===1?'Club Performance Overview':'Members and Engagement Deep Dive';
+  document.getElementById('fp-club-wrap').style.display=n===1?'flex':'none';
+  document.getElementById('fp-mem-wrap').style.display=n===2?'flex':'none';
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────────
+const expanded={};
+function renderModal(){
+  const tb=document.getElementById('modalBody'); tb.innerHTML='';
+  let tv=0,ta=0,tn=0,tj=0,tl=0,tf=0;
+  MODAL_ROWS.forEach(yr=>{
+    tv+=yr.visits;ta+=yr.active;tn+=yr.net;tj+=yr.joiners;tl+=yr.leavers;tf+=yr.friend;
+    const exp=expanded[yr.year];
+    const tr=document.createElement('tr'); tr.className='yr-row';
+    tr.innerHTML=`<td><span class="expand-btn" onclick="toggleExp('${yr.year}')">${exp?'▼':'▶'}</span>${yr.year}</td>
+      <td>${fmtDE(yr.visits)}</td><td>${fmtDE(yr.active)}</td>
+      <td>${yr.net>=0?'+':''}${fmtDE(yr.net)}</td>
+      <td>${fmtDE(yr.joiners)}</td><td>${fmtDE(yr.leavers)}</td><td>${fmtDE(yr.friend)}</td>`;
+    tb.appendChild(tr);
+    if(exp && yr.children){
+      yr.children.forEach(q=>{
+        const qr=document.createElement('tr');
+        qr.innerHTML=`<td style="padding-left:22px">${q.q}</td>
+          <td>${fmtDE(q.visits)}</td><td>${fmtDE(q.active)}</td>
+          <td>${q.net>=0?'+':''}${fmtDE(q.net)}</td>
+            <td>${fmtDE(q.joiners)}</td><td>${fmtDE(q.leavers)}</td><td>${fmtDE(q.friend)}</td>`;
+        tb.appendChild(qr);
+      });
+    }
+  });
+  const tot=document.createElement('tr'); tot.className='tot-row';
+  tot.innerHTML=`<td>Total</td>
+    <td>${fmtDE(tv)}</td><td>—</td>
+    <td>${tn>=0?'+':''}${fmtDE(tn)}</td>
+    <td>${fmtDE(tj)}</td><td>${fmtDE(tl)}</td><td>${fmtDE(tf)}</td>`;
+  tb.appendChild(tot);
+}
+function toggleExp(yr){
+  expanded[yr]=!expanded[yr];
+  renderModal();
+}
+function openModal(){
+  renderModal();
+  document.getElementById('visitsModal').style.display='flex';
+}
+function closeModal(){
+  document.getElementById('visitsModal').style.display='none';
+}
+document.getElementById('visitsModal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+</script>
+</body>
+</html>
